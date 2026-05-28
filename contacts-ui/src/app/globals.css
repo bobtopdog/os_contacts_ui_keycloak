@@ -1,0 +1,61 @@
+:root {
+  --accent: #0d6efd;
+}
+
+body {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* Contact card hover effect */
+.contact-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.contact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+  color: inherit;
+}
+
+/* Avatar initials circle */
+.avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--accent);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Detail page back link */
+.back-link {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.accordion {
+  --bs-accordion-btn-bg: #ffffff;
+  --bs-accordion-active-bg: rgb(108, 117, 127);
+  --bs-accordion-active-color: #ffffff;
+  --bs-accordion-bg: mintcream;
+  --bs-accordion-color: #000000;
+  --bs-accordion-btn-focus-box-shadow: none;
+}
+
+.scroll100 {
+  height: 400px;
+  overflow-y: scroll;
+}
