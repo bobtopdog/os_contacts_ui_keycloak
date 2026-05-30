@@ -33,8 +33,8 @@ export default async function MyContactsPage() {
 
   return (
     <>
-      <div className="mb-4">{session?.user.name}
-        <p className="lead fw-bold mb-1">My Contacts</p>
+      <div className="mb-4">
+        <p className="lead">My Contacts</p>
         <p className="text-muted mb-0">
           Contacts where you are marked as a point of contact.
         </p>

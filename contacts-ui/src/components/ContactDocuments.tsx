@@ -200,7 +200,7 @@ export default function ContactDocuments({ contactId }: Props) {
       {status === 'authenticated' ? (
         <div className="card border-0 shadow-sm mb-4">
           <div className="card-body">
-            <p className="fw-medium mb-2">Upload a document</p>
+            <p className="fw-medium mb-2">Upload a document. <span className="text-danger">IMPORTANT. Only upload documents classified as S2 or below</span></p>
 
             <div className="mb-2">
               <input

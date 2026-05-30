@@ -61,7 +61,7 @@ const alignment: IcAlignment = "center";
        
         <IcTopNavigation
           appTitle="OPUS STORM"
-          status="beta v1.0"
+          status="Phase 1.0"
           version=""
           contentAligned={alignment}
         >
@@ -100,7 +100,7 @@ const alignment: IcAlignment = "center";
           <IcNavigationItem slot="navigation" label="Tag search" href="#collapseTag" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapseTag"/>
           <IcNavigationItem slot="navigation" label="My contacts" href="/mycontacts" title="My contacts" />
           <IcNavigationItem slot="navigation" label="Teams" href="#collapseExample" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapseExample"/>
-          <IcNavigationItem slot="navigation" label="Help" href="#" title="Help" />
+          <IcNavigationItem slot="navigation" label="Help" href="/help" title="Help" />
         </IcTopNavigation>
             
         

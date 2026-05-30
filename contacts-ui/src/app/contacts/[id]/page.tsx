@@ -57,11 +57,10 @@ export default async function ContactDetailPage({ params }: Props) {
   return (
     <>
       {/* Back link */}
-      <Link href="/" className="back-link text-primary d-inline-flex align-items-center gap-1 mb-4">
-        ← Back to search
-      </Link>
+      
 
       <div className="row justify-content-center">
+        <p className="lead">Contact Details</p>
         <div className="col-8 col-md-8 col-lg-6">
           <div className="card shadow border-0">
 
@@ -135,7 +134,7 @@ export default async function ContactDetailPage({ params }: Props) {
       </button>
     </h2>
     <div id="collapseTwo" className="accordion-collapse collapse show" aria-labelledby="headingTwo"  data-bs-parent="#accordionExample">
-      <div className="accordion-body">
+      <div className="accordion-body  scroll100 ">
        <ContactHighlights contactId={contact.personId} />
       </div>
     </div>

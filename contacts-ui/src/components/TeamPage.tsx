@@ -261,9 +261,7 @@ export default function TeamPage({ teamId }: Props) {
     <>
     <div className="row">
       <div className="col-6 col-md-8 col-lg-6">
-        <Link href="/" className="back-link text-primary d-inline-flex align-items-center gap-1 mb-4">
-        ← Back to home
-      </Link>
+        
       </div>
     </div>
     <div className="row justify-content-center">

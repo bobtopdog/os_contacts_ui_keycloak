@@ -8,6 +8,7 @@ export default async function TeamsPage({ params }: Props) {
   const { teamId } = await params;
   return (
     <div className="row justify-content-center">
+      <p className="lead">Teams</p>
       <div className="col-12 ">
         <TeamPage teamId={teamId} />
       </div>
