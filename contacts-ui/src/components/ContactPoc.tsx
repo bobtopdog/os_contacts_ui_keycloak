@@ -202,7 +202,7 @@ export default function ContactPoc({ contactId }: Props) {
       )}
 
       {pocs && pocs.length === 0 && (
-        <p className="text-muted small">No PoCyet for this contact.</p>
+        <p className="text-muted small">No PoC yet for this contact.</p>
       )}
 
       {pocs && pocs.length > 0 && (

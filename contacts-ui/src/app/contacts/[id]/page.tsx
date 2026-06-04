@@ -97,8 +97,10 @@ export default async function ContactDetailPage({ params }: Props) {
             </div>
 
           </div>
-          <div className='row'>
+          <div className='row pt-4'>
             <div className='col'>
+              
+
 <ContactTags contactId={contact.personId} />
             </div>
              <div className='col'>

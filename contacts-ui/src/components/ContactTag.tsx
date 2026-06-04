@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTag, postTag, deleteTag } from '@/libs/api';
-import type { ContactTag, Tags} from '@/types/contact';
+import type { ContactTag, Tags } from '@/types/contact';
 
 interface Props {
   contactId: string;
@@ -27,14 +27,15 @@ async function getAllTags(): Promise<Tags[]> {
   return json.data;
 }
 
-function TagCard({ 
-  tag, 
-  currentUsername, 
-  onDelete,  
-}: { 
-  tag: ContactTag; 
-  currentUsername: string ; 
-  onDelete: (tagId: string) => Promise<void>; }) {
+function TagCard({
+  tag,
+  currentUsername,
+  onDelete,
+}: {
+  tag: ContactTag;
+  currentUsername: string;
+  onDelete: (tagId: string) => Promise<void>;
+}) {
   const isOwner = tag.username === currentUsername;
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -54,25 +55,25 @@ function TagCard({
   }
 
   return (
-    
+
     <div className="col-auto">
       {isOwner && (
-        <button className="btn btn-outline-danger btn-sm py-0" 
-        title="Delete tag" 
-        
-        onClick={handleConfirmDelete}
-        disabled={isDeleting}
+        <button className="btn btn-outline-danger btn-sm py-0"
+          title="Delete tag"
+
+          onClick={handleConfirmDelete}
+          disabled={isDeleting}
         >
-           {isDeleting ? (
-                  <><span className="spinner-border spinner-border-sm me-1" role="status" />…</>
-                ) : '🗑️'}
-          
+          {isDeleting ? (
+            <><span className="spinner-border spinner-border-sm me-1" role="status" />…</>
+          ) : '🗑️'}
+
         </button>
       )}
       <span className="badge bg-primary ms-2 rounded-pill" title={tag.username}>
         {tag.tag}</span>
     </div>
-   
+
   );
 }
 
@@ -85,10 +86,10 @@ export default function ContactTags({ contactId }: Props) {
   const username = session?.user?.username ?? '';
 
 
-  const { data: tagsDd} = useQuery<Tags[]>({
-      queryKey: ['all-tags'],
-      queryFn: getAllTags,
-    });
+  const { data: tagsDd } = useQuery<Tags[]>({
+    queryKey: ['all-tags'],
+    queryFn: getAllTags,
+  });
 
 
   // Fetch existing notes
@@ -126,104 +127,140 @@ export default function ContactTags({ contactId }: Props) {
       tag: tag.trim(),
     });
   }
-async function handleDelete(pocId: string) {
+  async function handleDelete(pocId: string) {
     await deleteTag(pocId, username);
     queryClient.invalidateQueries({ queryKey: ['tags', contactId] });
   }
 
   // Names of areas already assigned to this contact
-const assignedNames = new Set((tags ?? []).map((a) => a.tag));
+  const assignedNames = new Set((tags ?? []).map((a) => a.tag));
 
-// Available areas = all areas minus the ones already assigned
-const availableTags = (tagsDd ?? []).filter(
-  (a) => !assignedNames.has(a.tag)
-);
+  // Available areas = all areas minus the ones already assigned
+  const availableTags = (tagsDd ?? []).filter(
+    (a) => !assignedNames.has(a.tag)
+  );
 
 
   return (
     <div >
-        <div className="row py-4"><div className='fw-medium border-bottom'>Tags</div>
-      {tags && tags.length > 0 && (
-       <>
-          {tags.map((tag) => (
+      <div className={`card border-1 mb-1 `}>
+        <div className="card-header text-muted small">
+          <div >Tags&nbsp;
+            <button type="button" className="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#tagModal">
+              +
+            </button></div>
 
-            <TagCard key={tag.tagId} tag={tag} currentUsername={session?.user.username ?? ''}  onDelete={handleDelete}/>
-          
-          ))}
-        </>
-      )}
-</div>
-      {/* Add note form — only shown when authenticated */}
-      {status === 'authenticated' ? (
-        
-        <div className="card border-0 shadow mb-4">
-          <div className="card-body">
-            <div className="row g-3 align-items-left">
-                <div className="col-auto">
-<label htmlFor="tagName" className="fcol-form-label ">
-              Add a tag
-            </label>
-                </div>
-                <div className="col-auto">
+        </div>
+        <div className="card-body py-2 px-3">
 
-                  <select
-                  id="tagName"
-                  className="form-select form-select-sm shadow-sm"
-                  value={tag}
-                  onChange={(e) => setTag(e.target.value)}
-                  disabled={mutation.isPending}
-                  >
-                    <option value="">Select</option>
+          {tags && tags.length > 0 && (
+            <div className="row py-2">
+              {tags.map((tag) => (
 
-                    {availableTags.map((tag) => (
-  <option key={tag.Id} value={tag.tag}>{tag.tag}</option>
-))}
+                <TagCard key={tag.tagId} tag={tag} currentUsername={session?.user.username ?? ''} onDelete={handleDelete} />
 
-                     
-                  </select>
-                
-                </div>
-                <div className="col-auto">
-                     <button
-                className="btn btn-primary btn-sm "
-                onClick={handleSave}
-                disabled={!tag.trim() || mutation.isPending}
-              >
-                {mutation.isPending ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-1" role="status" />
-                    Saving…
-                  </>
-                ) : (
-                  'Save tag'
-                )}
-              </button>
-                </div>
-
+              ))}
             </div>
+          )}
+
+        </div>
 
 
-            
-            
 
-            {saveError && (
-              <div className="alert alert-danger py-2 small mb-2">{saveError}</div>
-            )}
 
-            <div className="d-flex justify-content-between align-items-center">
-              <small className="text-muted">
-                Saving as <strong>{session.user.username}</strong>
-              </small>
-             
+
+      </div>
+
+
+      {/* Add note form — only shown when authenticated */}
+      <div className="modal fade" id="tagModal" data-bs-backdrop="static" tabIndex={-1} aria-labelledby="tagModalLabel" aria-hidden="true">
+        <div className="modal-dialog ">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="tagModalLabel">Tags</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              {status === 'authenticated' ? (
+
+
+
+                <div className="card border-0 shadow mb-4">
+                  <div className="card-body">
+                    <div className="row g-3 align-items-left">
+                      <div className="col-auto">
+                        <label htmlFor="tagName" className="fcol-form-label ">
+                          Add a tag
+                        </label>
+                      </div>
+                      <div className="col-auto">
+
+                        <select
+                          id="tagName"
+                          className="form-select form-select-sm shadow-sm"
+                          value={tag}
+                          onChange={(e) => setTag(e.target.value)}
+                          disabled={mutation.isPending}
+                        >
+                          <option value="">Select</option>
+
+                          {availableTags.map((tag) => (
+                            <option key={tag.Id} value={tag.tag}>{tag.tag}</option>
+                          ))}
+
+
+                        </select>
+
+                      </div>
+                      <div className="col-auto">
+                        <button
+                          className="btn btn-primary btn-sm "
+                          onClick={handleSave}
+                          disabled={!tag.trim() || mutation.isPending}
+                        >
+                          {mutation.isPending ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-1" role="status" />
+                              Saving…
+                            </>
+                          ) : (
+                            'Save tag'
+                          )}
+                        </button>
+                      </div>
+
+                    </div>
+
+
+
+
+
+                    {saveError && (
+                      <div className="alert alert-danger py-2 small mb-2">{saveError}</div>
+                    )}
+
+                    <div className="d-flex justify-content-between align-items-center">
+                      <small className="text-muted">
+                        Saving as <strong>{session.user.username}</strong>
+                      </small>
+
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="alert alert-info py-2 small mb-4">
+                  Please sign in to add tags.
+                </div>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
-      ) : (
-        <div className="alert alert-info py-2 small mb-4">
-          Please sign in to add tags.
-        </div>
-      )}
 
+
+      </div>
       {/* Notes history */}
       {isLoading && (
         <div className="text-center text-muted py-3">
@@ -242,7 +279,7 @@ const availableTags = (tagsDd ?? []).filter(
         <p className="text-muted small">No tags yet for this contact.</p>
       )}
 
-      
+
     </div>
   );
 }

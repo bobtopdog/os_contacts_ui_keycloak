@@ -13,7 +13,7 @@ interface Props { contactId: string; }
 
 const BASE_URL = process.env.NEXT_PUBLIC_OPENTEXT_BASE_URL ?? '';
 
-const SCORE_LABELS = ['Score 1', 'Score 2', 'Score 3', 'Score 4'] as const;
+const SCORE_LABELS = ['Relevance', 'Actionability', 'Risk', 'Meeting Score'] as const;
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', {

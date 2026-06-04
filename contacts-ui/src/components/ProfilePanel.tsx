@@ -331,10 +331,13 @@ export default function ProfilePanel() {
     <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Me</button>
   </li>
   <li className="nav-item" role="presentation">
-    <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">My teams</button>
+    <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Teams</button>
   </li>
   <li className="nav-item" role="presentation">
-    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Stuff</button>
+    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Notes</button>
+  </li>
+  <li className="nav-item" role="presentation">
+    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#meeting" type="button" role="tab" aria-controls="meeting" aria-selected="false">Meetings</button>
   </li>
 </ul>
 <div className="tab-content" id="myTabContent">
@@ -343,9 +346,11 @@ export default function ProfilePanel() {
     ...</div>
   <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
     <TeamsSection username={username} />
-    ...</div>
+    </div>
   <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">.
-    ..</div>
+    My Notes</div>
+  <div className="tab-pane fade" id="meeting" role="tabpanel" aria-labelledby="meeting-tab">.
+    Upcoming Meetings</div>
 </div>
  
     </>

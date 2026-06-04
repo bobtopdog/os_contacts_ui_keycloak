@@ -19,16 +19,19 @@ function PocCard({
   const [error, setError] = useState('');
 
   return (
-    <div className={`card border-0 mb-1 `}>
+    <div className="col">
+    <div className={`card border-1 mb-1 `}>
+      <div className="card-header text-muted small">{highlight.source} </div>
       <div className="card-body py-2 px-3">   
           <>
-          <div className=" border-bottom">
-          <div className="text-muted small">{highlight.source} </div>
+          
+          
             <div className="fw-medium" style={{ whiteSpace: 'pre-wrap' }}>{highlight.value}</div> 
             <div className="text-muted small">{new Date(highlight.created_at).toLocaleString()}</div> 
-            </div>
+            
           </>
       </div>
+    </div>
     </div>
   );
 }
@@ -65,7 +68,7 @@ export default function ContactHighlights({ contactId }: Props) {
       )}
 
       {highlights && highlights.length > 0 && (
-        <div>
+        <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-2 g-4">
           {highlights.map((highlight) => (
             <PocCard
               key={highlight.source}
