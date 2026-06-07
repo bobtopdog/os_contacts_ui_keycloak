@@ -43,7 +43,7 @@ const alignment: IcAlignment = "center";
         flex: 1,
       },
       
-      mainSectionContainer: { flex: 1 , padding: 3},
+      mainSectionContainer: {flex: 1 , padding: 3},
     });
     const classes = useStyles(); 
 
@@ -106,7 +106,7 @@ const alignment: IcAlignment = "center";
         
         <main id="main" className={classes.main}>
           <IcSectionContainer className={classes.mainSectionContainer} aligned={alignment}>
-            <div>
+            <div style={{minHeight: "75vh;"}}>
 
                 <Providers>
                   <BootstrapClient />

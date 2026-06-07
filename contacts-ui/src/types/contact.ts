@@ -149,3 +149,11 @@ export interface ContactArea{
   area: string;
   createdAt: string;
 }
+
+export interface ContactHighlightNote {
+  noteId: string;
+  contactId: string;
+  username: string;
+  comment: string;
+  createdAt: string;
+}

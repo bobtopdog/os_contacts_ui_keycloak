@@ -10,7 +10,7 @@ import ContactAreas from '@/components/ContactArea'
 
 
 import Icon from '@mdi/react'
-import { mdiLabelMultipleOutline, mdiAccountGroup, mdiNoteMultipleOutline, mdiFileDocumentMultipleOutline, mdiPhone, mdiEmail , mdiDomain, mdiPhoneClassic } from '@mdi/js';
+import { mdiLabelMultipleOutline, mdiAccountGroup, mdiNoteMultipleOutline, mdiFileDocumentMultipleOutline, mdiPhone, mdiEmail, mdiDomain, mdiPhoneClassic } from '@mdi/js';
 
 
 
@@ -26,10 +26,10 @@ function DetailRow({ icon, label, value }: { icon: string; label: string; value?
       <div>
         <div className="text-muted small">{label}</div>
         {label === 'Email' ? (
-                <div className="fw-medium"><a href='mailto:{value}'>{value}</a></div>
-              ) : (
-                <div className="fw-medium">{value}</div>
-              )}
+          <div className="fw-medium"><a href='mailto:{value}'>{value}</a></div>
+        ) : (
+          <div className="fw-medium">{value}</div>
+        )}
       </div>
     </div>
   );
@@ -57,7 +57,7 @@ export default async function ContactDetailPage({ params }: Props) {
   return (
     <>
       {/* Back link */}
-      
+
 
       <div className="row justify-content-center">
         <p className="lead">Contact Details</p>
@@ -85,9 +85,9 @@ export default async function ContactDetailPage({ params }: Props) {
             {/* Card body with all fields */}
             <div className="card-body px-4 py-3">
               <DetailRow icon={mdiDomain} label="Organisation" value={contact.organisation} />
-              <DetailRow icon={mdiEmail}label="Email"        value={contact.email} />
-              <DetailRow icon={mdiPhone} label="Work Phone"   value={contact.workPhone} />
-              <DetailRow icon={mdiPhoneClassic} label="Home Phone"   value={contact.homePhone} />
+              <DetailRow icon={mdiEmail} label="Email" value={contact.email} />
+              <DetailRow icon={mdiPhone} label="Work Phone" value={contact.workPhone} />
+              <DetailRow icon={mdiPhoneClassic} label="Home Phone" value={contact.homePhone} />
             </div>
 
             {/* Footer with meta */}
@@ -99,77 +99,77 @@ export default async function ContactDetailPage({ params }: Props) {
           </div>
           <div className='row pt-4'>
             <div className='col'>
-              
 
-<ContactTags contactId={contact.personId} />
-            </div>
-             <div className='col'>
-<ContactAreas contactId={contact.personId} />
-             </div>
-            </div>
 
-          
+              <ContactTags contactId={contact.personId} />
+            </div>
+            <div className='col'>
+              <ContactAreas contactId={contact.personId} />
+            </div>
+          </div>
+
+
 
         </div>
         <div className="col-4 col-md-8 col-lg-6">
-          
+
           <div className="accordion  shadow border-0" id="accordionExample">
-  <div className="accordion-item">
-    <h2 className="accordion-header" id="headingOne">
-      <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-        <Icon path={mdiLabelMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
-        NCF - Self-elected points of contact
-      </button>
-    </h2>
-    <div id="collapseOne" className="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-      <div className="accordion-body">
-        <ContactPoc contactId={contact.personId} />
-      </div>
-    </div>
-  </div>
+            <div className="accordion-item">
+              <h2 className="accordion-header" id="headingOne">
+                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                  <Icon path={mdiLabelMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
+                  NCF - Self-elected points of contact
+                </button>
+              </h2>
+              <div id="collapseOne" className="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div className="accordion-body">
+                  <ContactPoc contactId={contact.personId} />
+                </div>
+              </div>
+            </div>
 
-  <div className="accordion-item">
-    <h2 className="accordion-header" id="headingTwo">
-      <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-        <Icon path={mdiNoteMultipleOutline } size={1} title="Delete youself as PoC" color="blue" />&nbsp;
-        Headlines - Latest additions/updates
-      </button>
-    </h2>
-    <div id="collapseTwo" className="accordion-collapse collapse show" aria-labelledby="headingTwo"  data-bs-parent="#accordionExample">
-      <div className="accordion-body  scroll100 ">
-       <ContactHighlights contactId={contact.personId} />
-      </div>
-    </div>
-  </div>
+            <div className="accordion-item">
+              <h2 className="accordion-header" id="headingTwo">
+                <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                  <Icon path={mdiNoteMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
+                  Headlines - Latest additions/updates
+                </button>
+              </h2>
+              <div id="collapseTwo" className="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div className="accordion-body  scroll100 ">
+                  <ContactHighlights contactId={contact.personId} />
+                </div>
+              </div>
+            </div>
 
-  <div className="accordion-item">
-    <h2 className="accordion-header">
-      <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-        <Icon path={mdiFileDocumentMultipleOutline } size={1} title="Delete youself as PoC" color="blue" />&nbsp;
-        Anex
-      </button>
-    </h2>
-    <div id="collapseThree" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
-      <div className="accordion-body">
-        <ContactAnex contactId={contact.personId} />
-      </div>
-    </div>
-  </div>
-  <div className="accordion-item">
-    <h2 className="accordion-header">
-      <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-        <Icon path={mdiFileDocumentMultipleOutline } size={1} title="Delete youself as PoC" color="blue" />&nbsp;
-        Private notes
-      </button>
-    </h2>
-    <div id="collapseFour" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
-      <div className="accordion-body scroll100 ">
-        
-        <ContactNotes contactId={contact.personId} />
-      </div>
-    </div>
-  </div>
-</div>
+            <div className="accordion-item">
+              <h2 className="accordion-header">
+                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                  <Icon path={mdiFileDocumentMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
+                  Anex
+                </button>
+              </h2>
+              <div id="collapseThree" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div className="accordion-body">
+                  <ContactAnex contactId={contact.personId} />
+                </div>
+              </div>
+            </div>
+            <div className="accordion-item">
+              <h2 className="accordion-header">
+                <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                  <Icon path={mdiFileDocumentMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
+                  Private notes
+                </button>
+              </h2>
+              <div id="collapseFour" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                <div className="accordion-body scroll100 ">
+
+                  <ContactNotes contactId={contact.personId} />
+                </div>
+              </div>
+            </div>
+          </div>
 
 
 

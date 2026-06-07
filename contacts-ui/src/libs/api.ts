@@ -1,6 +1,7 @@
 import type { ContactDetail, ContactNote, ContactPoc,  ContactSummary, 
   PaginatedResponse, ContactTag, ContactLink, ContactMeeting, MeetingLink, 
-  ContactDocument, ContactAnexNote, Team, UserTeam, TeamDetail, TeamMember, ContactHighlights, ContactArea} from '@/types/contact';
+  ContactDocument, ContactAnexNote, Team, UserTeam, TeamDetail, TeamMember, 
+  ContactHighlights, ContactArea, ContactHighlightNote} from '@/types/contact';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
 // Notes are served by this Next.js app's own API routes (direct notes DB connection)
@@ -448,7 +449,7 @@ export async function patchAnexNote(
   username: string,
   comment: string
 ): Promise<ContactAnexNote> {
-  const res = await fetch(`${NOTES_API}/api/notes/anexnote/${noteId}`, {
+  const res = await fetch(`${NOTES_API}/api/anexnote/note/${noteId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, comment }),
@@ -609,3 +610,66 @@ export async function deleteArea(
     throw new Error(err.message ?? `Failed to delete Area ${res.status}`);
   }
 }
+
+// ---- highlight Notes (read/write, via this app's own API routes on port 3000) -------
+
+export async function getHighlightNotes(contactId: string): Promise<ContactHighlightNote[]> {
+  const res = await fetch(`${NOTES_API}/api/highlightnotes/${contactId}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Failed to fetch highlight notes: ${res.status}`);
+  const json = await res.json();
+  return json.data;
+}
+
+export async function postHighlightNote(payload: {
+  contactId: string;
+  username: string;
+  comment: string;
+}): Promise<ContactHighlightNote> {
+  const res = await fetch(`${NOTES_API}/api/highlightnotes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message ?? `Failed to save highlight note: ${res.status}`);
+  }
+  const json = await res.json();
+  return json.data;
+}
+
+export async function patchHighlightNote(
+  noteId: string,
+  username: string,
+  comment: string
+): Promise<ContactHighlightNote> {
+  const res = await fetch(`${NOTES_API}/api/highlightnotes/note/${noteId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, comment }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message ?? `Failed to update highlight note: ${res.status}`);
+  }
+  const json = await res.json();
+  return json.data;
+}
+
+export async function deleteHighlightNote(
+  noteId: string,
+  username: string
+): Promise<void> {
+  const res = await fetch(`${NOTES_API}/api/highlightnotes/note/${noteId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message ?? `Failed to delete highlight note: ${res.status}`);
+  }
+}
+
