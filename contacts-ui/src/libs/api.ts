@@ -59,6 +59,15 @@ export async function getNotes(contactId: string): Promise<ContactNote[]> {
   return json.data;
 }
 
+export async function getMyNotes(userName: string): Promise<ContactNote[]> {
+  const res = await fetch(`${NOTES_API}/api/notes/mynotes/${userName}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Failed to fetch notes: ${res.status}`);
+  const json = await res.json();
+  return json.data;
+}
+
 export async function postNote(payload: {
   contactId: string;
   username: string;
@@ -274,6 +283,16 @@ export async function getMeetings(contactId: string): Promise<ContactMeeting[]> 
   const json = await res.json();
   return json.data;
 }
+
+export async function getMyMeetings(userName: string): Promise<ContactMeeting[]> {
+  const res = await fetch(`${NOTES_API}/api/meetings/mymeetings/${userName}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Failed to fetch meetings: ${res.status}`);
+  const json = await res.json();
+  return json.data;
+}
+
 
 export async function postMeeting(payload: {
   contactId: string; username: string; meetingDate: string;

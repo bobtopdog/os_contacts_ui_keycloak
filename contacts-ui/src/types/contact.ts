@@ -79,6 +79,16 @@ export interface ContactMeeting {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface MyContactMeeting {
+  meetingId: string;
+  contactId: string;
+  username: string;
+  meetingDate: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
 export interface ContactDocument {
   documentId: string;
   contactId: string;

@@ -117,7 +117,7 @@ export default async function ContactDetailPage({ params }: Props) {
             <div className="accordion-item">
               <h2 className="accordion-header" id="headingOne">
                 <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                  <Icon path={mdiLabelMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
+                  <Icon path={mdiLabelMultipleOutline} size={1} title="PoC" color="blue" />&nbsp;
                   NCF - Self-elected points of contact
                 </button>
               </h2>
@@ -131,7 +131,7 @@ export default async function ContactDetailPage({ params }: Props) {
             <div className="accordion-item">
               <h2 className="accordion-header" id="headingTwo">
                 <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                  <Icon path={mdiNoteMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
+                  <Icon path={mdiNoteMultipleOutline} size={1} title="Headlines" color="blue" />&nbsp;
                   Headlines - Latest additions/updates
                 </button>
               </h2>
@@ -145,7 +145,7 @@ export default async function ContactDetailPage({ params }: Props) {
             <div className="accordion-item">
               <h2 className="accordion-header">
                 <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  <Icon path={mdiFileDocumentMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
+                  <Icon path={mdiFileDocumentMultipleOutline} size={1} title="Anex" color="blue" />&nbsp;
                   Anex
                 </button>
               </h2>
@@ -158,7 +158,7 @@ export default async function ContactDetailPage({ params }: Props) {
             <div className="accordion-item">
               <h2 className="accordion-header">
                 <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-                  <Icon path={mdiFileDocumentMultipleOutline} size={1} title="Delete youself as PoC" color="blue" />&nbsp;
+                  <Icon path={mdiFileDocumentMultipleOutline} size={1} title="Private Notes" color="blue" />&nbsp;
                   Private notes
                 </button>
               </h2>

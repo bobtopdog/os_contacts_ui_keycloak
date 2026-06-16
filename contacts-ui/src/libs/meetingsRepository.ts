@@ -1,5 +1,5 @@
 import { notesQuery } from './notesDb';
-import type { ContactMeeting, MeetingLink } from '@/types/contact';
+import type { MyContactMeeting, ContactMeeting, MeetingLink } from '@/types/contact';
 
 interface MeetingRow {
   meeting_id: string;
@@ -11,6 +11,16 @@ interface MeetingRow {
   score2: number;
   score3: number;
   score4: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+interface MyMeetingRow {
+  meeting_id: string;
+  contact_id: string;
+  username: string;
+  meeting_date: Date;
+  notes: string;
   created_at: Date;
   updated_at: Date;
 }
@@ -48,6 +58,18 @@ function toMeeting(row: MeetingRow, links: MeetingLink[] = []): ContactMeeting {
   };
 }
 
+function toMyMeeting(row: MyMeetingRow): MyContactMeeting {
+  return {
+    meetingId: row.meeting_id,
+    contactId: row.contact_id,
+    username: row.username,
+    meetingDate: row.meeting_date.toISOString().split('T')[0], // YYYY-MM-DD
+    notes: row.notes,
+    createdAt: row.created_at.toISOString(),
+    updatedAt: row.updated_at.toISOString(),
+  };
+}
+
 // Fetch all meetings for a contact with their links, newest meeting date first
 export async function getMeetingsByContactId(contactId: string): Promise<ContactMeeting[]> {
   const meetingRows = await notesQuery<MeetingRow>(
@@ -60,6 +82,7 @@ export async function getMeetingsByContactId(contactId: string): Promise<Contact
   );
 
   if (meetingRows.length === 0) return [];
+
 
   // Fetch all links for these meetings in one query
   const meetingIds = meetingRows.map((r) => r.meeting_id);
@@ -81,6 +104,19 @@ export async function getMeetingsByContactId(contactId: string): Promise<Contact
 
   return meetingRows.map((r) => toMeeting(r, linksByMeeting[r.meeting_id] ?? []));
 }
+
+export async function getMeetingsByUserName(userName: string): Promise<MyContactMeeting[]> {
+  const meetingRows = await notesQuery<MeetingRow>(
+    `SELECT meeting_id, contact_id, username, meeting_date, notes,
+     created_at, updated_at
+     FROM contact_meetings
+     WHERE username = $1
+     ORDER BY created_at DESC`,
+    [userName]
+  );
+  return meetingRows.map(toMyMeeting);
+}
+
 
 // Create a new meeting record
 export async function createMeeting(

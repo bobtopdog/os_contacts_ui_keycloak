@@ -9,7 +9,7 @@ export default function Navbar() {
   const { data: session, status } = useSession();
 
   return (<>
-    <div className="offcanvas offcanvas-start" tabIndex={-1} id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div className="offcanvas offcanvas-start w-50" tabIndex={-1} id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
       <div className="offcanvas-header">
         <h5 className="offcanvas-title" id="offcanvasExampleLabel">My Profile</h5>
         <button type="button" className="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>

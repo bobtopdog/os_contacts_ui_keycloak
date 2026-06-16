@@ -30,6 +30,18 @@ export async function getNotesByContactId(contactId: string): Promise<ContactNot
   return rows.map(toNote);
 }
 
+export async function getNotesByUserName(userName: string): Promise<ContactNote[]> {
+  const rows = await notesQuery<NoteRow>(
+    `SELECT note_id, contact_id, username, comment, created_at
+     FROM contact_notes
+     WHERE username = $1
+     ORDER BY created_at DESC`,
+    [userName]
+  );
+  return rows.map(toNote);
+}
+
+
 export async function createNote(
   contactId: string,
   username: string,

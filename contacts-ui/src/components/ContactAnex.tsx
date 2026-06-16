@@ -35,7 +35,7 @@ export default function ContactAnex({ contactId }: Props) {
     </div>
    
     <div className="modal fade" id="discoveryModal" data-bs-backdrop="static" tabIndex={-1} aria-labelledby="discoveryModalLabel" aria-hidden="true">
-  <div className="modal-dialog modal-lg">
+  <div className="modal-dialog modal-lg  modal-dialog-scrollable">
     <div className="modal-content">
       <div className="modal-header">
         <h5 className="modal-title" id="discoveryModalLabel">Discovery Links</h5>
@@ -52,7 +52,7 @@ export default function ContactAnex({ contactId }: Props) {
 </div>
 
   <div className="modal fade" id="uploadModal" data-bs-backdrop="static" tabIndex={-1} aria-labelledby="uploadModalLabel" aria-hidden="true">
-  <div className="modal-dialog modal-lg">
+  <div className="modal-dialog modal-lg modal-dialog-scrollable">
     <div className="modal-content">
       <div className="modal-header">
         <h5 className="modal-title" id="uploadModalLabel">Uploads</h5>
@@ -69,7 +69,7 @@ export default function ContactAnex({ contactId }: Props) {
 </div>
 
   <div className="modal fade" id="notesModal" data-bs-backdrop="static" tabIndex={-1} aria-labelledby="notesModalLabel" aria-hidden="true">
-  <div className="modal-dialog modal-lg">
+  <div className="modal-dialog modal-lg  modal-dialog-scrollable">
     <div className="modal-content">
       <div className="modal-header">
         <h5 className="modal-title" id="notesModalLabel">Notes</h5>
@@ -86,13 +86,13 @@ export default function ContactAnex({ contactId }: Props) {
 </div>
 
   <div className="modal fade" id="scoringModal" data-bs-backdrop="static" tabIndex={-1} aria-labelledby="scoringModalLabel" aria-hidden="true">
-  <div className="modal-dialog modal-lg">
+  <div className="modal-dialog modal-lg modal-dialog-scrollable">
     <div className="modal-content">
       <div className="modal-header">
         <h5 className="modal-title" id="scoringModalLabel">Meeting Scoring</h5>
         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div className="modal-body">
+      <div className="modal-body scroll110 ">
         <ContactMeetings contactId={contactId} />
       </div>
       <div className="modal-footer">

@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getProfileTeams, postUserTeam, deleteUserTeam } from '@/libs/api';
 import type { Team, UserTeam } from '@/types/contact';
+import MyNotes from '@/components/MyNotes';
+import MyMeetings from '@/components/MyMeetings';
 
 // ---------------------------------------------------------------------------
 // Profile info card — populated from session token
@@ -328,30 +330,38 @@ export default function ProfilePanel() {
     <>
     <ul className="nav nav-tabs" id="myTab" role="tablist">
   <li className="nav-item" role="presentation">
-    <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Me</button>
+    <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">About Me</button>
   </li>
   <li className="nav-item" role="presentation">
     <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Teams</button>
   </li>
   <li className="nav-item" role="presentation">
-    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Notes</button>
+    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">My Notes</button>
   </li>
   <li className="nav-item" role="presentation">
-    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#meeting" type="button" role="tab" aria-controls="meeting" aria-selected="false">Meetings</button>
+    <button className="nav-link" id="meeting-tab" data-bs-toggle="tab" data-bs-target="#meeting" type="button" role="tab" aria-controls="meeting" aria-selected="false">My Meetings</button>
+  </li>
+  <li className="nav-item" role="presentation">
+    <button className="nav-link" id="community-tab" data-bs-toggle="tab" data-bs-target="#community" type="button" role="tab" aria-controls="community" aria-selected="false">My Community</button>
   </li>
 </ul>
 <div className="tab-content" id="myTabContent">
   <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
     <ProfileCard username={username} name={name} email={email} image={image} />
-    ...</div>
+    </div>
   <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
     <TeamsSection username={username} />
     </div>
   <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">.
-    My Notes</div>
+    My Private Notes
+    <MyNotes userName={username} /></div>
   <div className="tab-pane fade" id="meeting" role="tabpanel" aria-labelledby="meeting-tab">.
-    Upcoming Meetings</div>
+    My Upcoming Meetings
+    <MyMeetings userName={username} /></div>
+  <div className="tab-pane fade" id="community" role="tabpanel" aria-labelledby="community-tab">.
+    My Communities</div>
 </div>
+
  
     </>
   );
