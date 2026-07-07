@@ -9,6 +9,7 @@
     "start": "next start -p 3000",
     "lint": "eslint",
     "db:migrate:notes": "node scripts/migrate-notes.cjs",
+    "db:migrate:communities": "node scripts/communities.cjs",
     "dev:clean": "rm -rf .next/dev/cache .turbo && next dev"
   },
   "dependencies": {

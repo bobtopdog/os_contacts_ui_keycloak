@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getHighlightsByContactId } from '@/libs/highlightsRepository';
+import { getContactTags, addContactTag } from '@/libs/communitiesRepository';
 
 function isValidUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
 
 /**
- * GET /api/highlights/:contactId
- * Returns all highlights for a given contact 
+ * GET /api/communities/contacts/:contactId
+ * Returns all community tags for a contact.
  */
 export async function GET(
   _request: NextRequest,
@@ -17,16 +17,16 @@ export async function GET(
 
   if (!isValidUuid(contactId)) {
     return NextResponse.json(
-      { error: 'Bad Request', message: `"${contactId}" is not a valid contact ID.` },
+      { error: 'Bad Request', message: 'Invalid contact ID.' },
       { status: 400 }
     );
   }
 
   try {
-    const notes = await getHighlightsByContactId(contactId);
-    return NextResponse.json({ data: notes });
+    const tags = await getContactTags(contactId);
+    return NextResponse.json({ data: tags });
   } catch (err) {
-    console.error(`GET /api/headlines/${contactId} error:`, err);
+    console.error('GET tags error:', err);
     return NextResponse.json(
       { error: 'Internal Server Error', message: 'An unexpected error occurred' },
       { status: 500 }

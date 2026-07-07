@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getMember } from "@/libs/ministers/api-client";
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import MinisterNotes from "@/components/MinisterNotes";
 
 export const dynamic = "force-dynamic";
 
@@ -139,6 +140,14 @@ export default async function MemberDetailPage({
           {member.posts_held.length === 0 && (
             <div className="alert alert-light">No post history recorded.</div>
           )}
+
+          <div>
+            <MinisterNotes memberId={member.id} />
+
+         
+          </div>
+
+
         </div>
 
         {/* Contacts column */}

@@ -36,7 +36,7 @@ export async function GET(
 
     // Return the file as a download
     
-    return new NextResponse(data, {
+    return new NextResponse(new Uint8Array(data), {
       status: 200,
       headers: {
         'Content-Type': meta.mimeType,

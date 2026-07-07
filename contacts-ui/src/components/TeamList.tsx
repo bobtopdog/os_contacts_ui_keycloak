@@ -1,10 +1,11 @@
 'use client';
 
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import type { Team } from '@/types/contact';
+import { getProfileTeams } from '@/libs/api';
 
 // ---------------------------------------------------------------------------
 // Teams management section
@@ -41,14 +42,14 @@ function TeamsSection({ username }: { username: string }) {
                 className="form-select"
                 value={selectedTeamId}
                 onChange={(e) => setSelectedTeamId(e.target.value)}
-                disabled={addMutation.isPending || availableTeams.length === 0}
+                disabled={ availableTeams?.length === 0}
               >
                 <option value="">
-                  {availableTeams.length === 0
+                  {availableTeams?.length === 0
                     ? 'You are in all available teams'
                     : 'Select a team…'}
                 </option>
-                {availableTeams.map((team) => (
+                {availableTeams?.map((team) => (
                   <option key={team.teamId} value={team.teamId}>
                     {team.teamName}
                   </option>

@@ -692,3 +692,13 @@ export async function deleteHighlightNote(
   }
 }
 
+// -------------------- Communities ------------------------
+
+/* export async function getMyCommunities(userName: string): Promise<CommunityOwner[]> {
+  const res = await fetch(`${NOTES_API}/api/communities/mycommunities/${userName}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Failed to fetch meetings: ${res.status}`);
+  const json = await res.json();
+  return json.data;
+} */

@@ -7,6 +7,7 @@ import ContactTags from '@/components/ContactTag';
 import ContactAnex from '@/components/ContactAnex';
 import ContactHighlights from '@/components/ContactHeadlines';
 import ContactAreas from '@/components/ContactArea'
+import ContactCommunityTags from '@/components/ContactCommunityTag';
 
 
 import Icon from '@mdi/react'
@@ -105,6 +106,11 @@ export default async function ContactDetailPage({ params }: Props) {
             </div>
             <div className='col'>
               <ContactAreas contactId={contact.personId} />
+            </div>
+          </div>
+          <div className='row pt-4'>
+            <div className='col'>
+              <ContactCommunityTags contactId={contact.personId} />
             </div>
           </div>
 

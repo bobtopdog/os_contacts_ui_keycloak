@@ -72,3 +72,4 @@ export type Paginated<T> = {
 };
 
 export type Single<T> = { data: T };
+
