@@ -6,7 +6,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getTeamPage, patchTeam } from '@/libs/api';
 import type { TeamDetail, TeamMember } from '@/types/contact';
 import Link from 'next/link';
-
+import TeamStatClientMeetings from '@/components/teamStats/TeamStatClientMeetings';
+import TeamStatMinisterMeetings from '@/components/teamStats/TeamStatMinisterMeetings';
+import TeamNotesOverview from '@/components/teamStats/TeamNotesOverview';
+import TeamScoreSummary from '@/components/teamStats/TeamScoreSummary';
+import TeamMemberActivity from '@/components/teamStats/TeamMemberActivity';
+import TeamRecentClientMeetings from './teamStats/TeamRecentClientMeetings';
+import TeamRecentMinisterMeetings from './teamStats/TeamRecentMinisterMeetings';
 interface Props {
   teamId: string;
 }
@@ -276,6 +282,38 @@ export default function TeamPage({ teamId }: Props) {
 <div className="col-4 col-md-8 col-lg-6">
       <MembersTable members={data.members} /></div>
       </div>
+ {/* Weekly stats row */}
+    <div className="row g-3 mb-4">
+      <div className="col-6 col-md-3">
+        <TeamStatClientMeetings teamId={teamId} />
+      </div>
+      <div className="col-6 col-md-3">
+        <TeamStatMinisterMeetings teamId={teamId} />
+      </div>
+      <div className="col-12 col-md-6">
+        <TeamScoreSummary teamId={teamId} />
+      </div>
+    </div>
+
+    <div className="row g-3 mb-4">
+      <div className="col-12 col-md-7">
+        <TeamMemberActivity teamId={teamId} />
+      </div>
+      <div className="col-12 col-md-5">
+        <TeamNotesOverview teamId={teamId} />
+      </div>
+    </div>
+
+    <div className="row g-3 mb-4">
+      <div className="col-12 col-md-7">
+        <TeamRecentClientMeetings teamId={teamId} />
+      </div>
+      <div className="col-12 col-md-5">
+        <TeamRecentMinisterMeetings teamId={teamId} />
+      </div>
+    </div>
+
+
     </>
   );
 }

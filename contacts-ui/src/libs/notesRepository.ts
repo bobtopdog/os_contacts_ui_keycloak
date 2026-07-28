@@ -72,6 +72,36 @@ export async function updateNote(
   return rows.length ? toNote(rows[0]) : null;
 }
 
+//Move a private note to the public anex notes
+export async function moveNote1(noteId: string): Promise<ContactNote> {
+  const rows = await notesQuery<NoteRow>(
+    `
+    WITH moved_note AS (
+        DELETE FROM contact_notes
+        WHERE note_id = $1
+        RETURNING contact_id, username, comment, created_at
+    )
+    INSERT INTO contact_anex_notes (
+        contact_id,
+        username,
+        comment,
+        created_at
+    )
+    SELECT
+        contact_id,
+        username,
+        comment,
+        created_at
+    FROM moved_note
+    RETURNING *;
+    `,
+    [noteId]
+  );
+
+  return toNote(rows[0]);
+}
+
+
 // Delete a note — only if the username matches (owner check at DB level)
 export async function deleteNote(
   noteId: string,
@@ -86,3 +116,29 @@ export async function deleteNote(
   return rows.length > 0;
 }
 
+// ---------------------------------------------------------------------------
+// Move a private note to the public anex notes table (atomic CTE)
+// Only the owner can move their own note.
+// ---------------------------------------------------------------------------
+export async function moveNote(
+  noteId: string,
+  username: string
+): Promise<ContactNote | null> {
+  const rows = await notesQuery<NoteRow>(
+    `
+    WITH moved_note AS (
+      DELETE FROM contact_notes
+      WHERE note_id = $1 AND username = $2
+      RETURNING contact_id, username, comment, created_at
+    )
+    INSERT INTO contact_anex_notes (
+      contact_id, username, comment, created_at
+    )
+    SELECT contact_id, username, comment, created_at
+    FROM moved_note
+    RETURNING note_id, contact_id, username, comment, created_at;
+    `,
+    [noteId, username]
+  );
+  return rows.length ? toNote(rows[0]) : null;
+}

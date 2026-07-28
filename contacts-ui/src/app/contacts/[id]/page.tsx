@@ -7,6 +7,7 @@ import ContactTags from '@/components/ContactTag';
 import ContactAnex from '@/components/ContactAnex';
 import ContactHighlights from '@/components/ContactHeadlines';
 import ContactAreas from '@/components/ContactArea'
+import ContactCommunityTags from '@/components/ContactCommunityTag';
 
 
 import Icon from '@mdi/react'
@@ -107,6 +108,11 @@ export default async function ContactDetailPage({ params }: Props) {
               <ContactAreas contactId={contact.personId} />
             </div>
           </div>
+          <div className='row pt-4'>
+            <div className='col'>
+              <ContactCommunityTags contactId={contact.personId} />
+            </div>
+          </div>
 
 
 
@@ -145,8 +151,8 @@ export default async function ContactDetailPage({ params }: Props) {
             <div className="accordion-item">
               <h2 className="accordion-header">
                 <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-                  <Icon path={mdiFileDocumentMultipleOutline} size={1} title="Anex" color="blue" />&nbsp;
-                  Anex
+                  <Icon path={mdiFileDocumentMultipleOutline} size={1} title="Annex" color="blue" />&nbsp;
+                  Annex
                 </button>
               </h2>
               <div id="collapseThree" className="accordion-collapse collapse" data-bs-parent="#accordionExample">

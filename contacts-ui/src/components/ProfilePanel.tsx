@@ -7,6 +7,8 @@ import { getProfileTeams, postUserTeam, deleteUserTeam } from '@/libs/api';
 import type { Team, UserTeam } from '@/types/contact';
 import MyNotes from '@/components/MyNotes';
 import MyMeetings from '@/components/MyMeetings';
+import CommunitiesPanel from '@/components/CommunitiesPanel';
+import MeetingGroupsPanel from '@/components/MeetingGroupsPanel';
 
 // ---------------------------------------------------------------------------
 // Profile info card — populated from session token
@@ -221,7 +223,7 @@ function TeamsSection({ username }: { username: string }) {
       <div className="card-body">
         {/* Add team form */}
         <div className="bg-light rounded p-3 mb-4">
-         
+
           <div className="row g-2 align-items-end">
             <div className="col-12 col-md-12">
               <label className="form-label small mb-1">Join a team</label>
@@ -304,6 +306,10 @@ function TeamsSection({ username }: { username: string }) {
   );
 }
 
+
+
+
+
 // ---------------------------------------------------------------------------
 // ProfilePanel — self-contained, works on a page or inside an offcanvas
 // ---------------------------------------------------------------------------
@@ -328,41 +334,86 @@ export default function ProfilePanel() {
 
   return (
     <>
-    <ul className="nav nav-tabs" id="myTab" role="tablist">
-  <li className="nav-item" role="presentation">
-    <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">About Me</button>
-  </li>
-  <li className="nav-item" role="presentation">
-    <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Teams</button>
-  </li>
-  <li className="nav-item" role="presentation">
-    <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">My Notes</button>
-  </li>
-  <li className="nav-item" role="presentation">
-    <button className="nav-link" id="meeting-tab" data-bs-toggle="tab" data-bs-target="#meeting" type="button" role="tab" aria-controls="meeting" aria-selected="false">My Meetings</button>
-  </li>
-  <li className="nav-item" role="presentation">
-    <button className="nav-link" id="community-tab" data-bs-toggle="tab" data-bs-target="#community" type="button" role="tab" aria-controls="community" aria-selected="false">My Community</button>
-  </li>
-</ul>
-<div className="tab-content" id="myTabContent">
-  <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-    <ProfileCard username={username} name={name} email={email} image={image} />
-    </div>
-  <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-    <TeamsSection username={username} />
-    </div>
-  <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">.
-    My Private Notes
-    <MyNotes userName={username} /></div>
-  <div className="tab-pane fade" id="meeting" role="tabpanel" aria-labelledby="meeting-tab">.
-    My Upcoming Meetings
-    <MyMeetings userName={username} /></div>
-  <div className="tab-pane fade" id="community" role="tabpanel" aria-labelledby="community-tab">.
-    My Communities</div>
-</div>
+      <ul className="nav nav-tabs" id="myTab" role="tablist">
+        <li className="nav-item" role="presentation">
+          <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">About Me</button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Teams</button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">My Notes</button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button className="nav-link" id="meeting-tab" data-bs-toggle="tab" data-bs-target="#meeting" type="button" role="tab" aria-controls="meeting" aria-selected="false">My Meetings</button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button className="nav-link" id="community-tab" data-bs-toggle="tab" data-bs-target="#community" type="button" role="tab" aria-controls="community" aria-selected="false">My Community</button>
+        </li>
+        <li className="nav-item" role="presentation">
+          <button className="nav-link" id="mailgroup-tab" data-bs-toggle="tab" data-bs-target="#mailgroup" type="button" role="tab" aria-controls="mailgroup" aria-selected="false">My Mail Groups</button>
+        </li>
+      </ul>
+      <div className="tab-content" id="myTabContent">
+        <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <ProfileCard username={username} name={name} email={email} image={image} />
+        </div>
+        <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <TeamsSection username={username} />
+        </div>
+        <div className="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+          <div className="card border-0 shadow-sm">
+            <div className="card-header bg-white border-bottom py-3">
+              <h5 className="fw-semibold mb-0">👥 My Private Notes</h5>
+            </div>
+            <div className="card-body">
+              <MyNotes userName={username} />
+            </div>
 
- 
+          </div>
+          </div>
+        <div className="tab-pane fade" id="meeting" role="tabpanel" aria-labelledby="meeting-tab">
+          <div className="card border-0 shadow-sm">
+            <div className="card-header bg-white border-bottom py-3">
+              <h5 className="fw-semibold mb-0">👥 My Meetings</h5>
+            </div>
+            <div className="card-body">
+              <MyMeetings userName={username} />
+            </div>
+
+          </div>
+        </div>
+        <div className="tab-pane fade" id="community" role="tabpanel" aria-labelledby="community-tab">
+          <div className="card border-0 shadow-sm">
+            <div className="card-header bg-white border-bottom py-3">
+              <h5 className="fw-semibold mb-0">👥 My Communities</h5>
+            </div>
+            <div className="card-body">
+               <CommunitiesPanel />
+            </div>
+
+          </div>
+
+
+
+        </div>
+        <div className="tab-pane fade" id="mailgroup" role="tabpanel" aria-labelledby="mailgroup-tab">
+          <div className="card border-0 shadow-sm">
+            <div className="card-header bg-white border-bottom py-3">
+              <h5 className="fw-semibold mb-0">👥 My Mail Groups</h5>
+            </div>
+            <div className="card-body">
+               <MeetingGroupsPanel />
+            </div>
+
+          </div>
+
+
+
+        </div>
+      </div>
+
+
     </>
   );
 }

@@ -119,6 +119,22 @@ export async function deleteNote(
   }
 }
 
+export async function movePrivateNote(
+  noteId: string,
+  username: string
+): Promise<ContactNote> {
+  const res = await fetch(`${NOTES_API}/api/notes/note/${noteId}/move`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message ?? `Failed to move note: ${res.status}`);
+  }
+  return (await res.json()).data;
+}
+
 // ---- PoC(read/write, via this app's own API routes on port 3000) -------
 
 export async function getPoc(contactId: string): Promise<ContactPoc[]> {
@@ -295,7 +311,7 @@ export async function getMyMeetings(userName: string): Promise<ContactMeeting[]>
 
 
 export async function postMeeting(payload: {
-  contactId: string; username: string; meetingDate: string;
+  contactId: string; username: string; meetingDate: string; title: string;
   notes: string; score1: number; score2: number; score3: number; score4: number;
 }): Promise<ContactMeeting> {
   const res = await fetch(`${NOTES_API}/api/meetings`, {
@@ -312,7 +328,7 @@ export async function postMeeting(payload: {
 
 export async function patchMeeting(
   meetingId: string,
-  payload: { username: string; meetingDate: string; notes: string;
+  payload: { username: string; meetingDate: string; title: string; notes: string;
              score1: number; score2: number; score3: number; score4: number; }
 ): Promise<ContactMeeting> {
   const res = await fetch(`${NOTES_API}/api/meetings/meeting/${meetingId}`, {
@@ -692,3 +708,13 @@ export async function deleteHighlightNote(
   }
 }
 
+// -------------------- Communities ------------------------
+
+/* export async function getMyCommunities(userName: string): Promise<CommunityOwner[]> {
+  const res = await fetch(`${NOTES_API}/api/communities/mycommunities/${userName}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Failed to fetch meetings: ${res.status}`);
+  const json = await res.json();
+  return json.data;
+} */

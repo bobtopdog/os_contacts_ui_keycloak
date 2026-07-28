@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Bad Request', message: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { contactId, username, meetingDate, notes, score1, score2, score3, score4 } = body;
+  const { contactId, username, meetingDate, title, notes, score1, score2, score3, score4 } = body;
 
   if (!contactId || !isValidUuid(String(contactId))) {
     return NextResponse.json({ error: 'Bad Request', message: 'A valid contactId is required.' }, { status: 400 });
@@ -68,6 +68,7 @@ export async function POST(request: NextRequest) {
       String(contactId),
       String(username).trim(),
       String(meetingDate),
+      String(title ?? '').trim(),
       String(notes ?? '').trim(),
       clampScore(score1),
       clampScore(score2),

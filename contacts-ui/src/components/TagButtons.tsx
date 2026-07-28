@@ -44,7 +44,7 @@ export default function TagButtons() {
           <button
             key={tag.Id}
             className="btn btn-outline-primary btn-sm rounded-pill"
-            onClick={() => router.push(`/tagged/${tag.tag}`)}
+            onClick={() => router.push(`/tagged/${encodeURIComponent(tag.tag)}`)}
           >
             👥 {tag.tag}
           </button>

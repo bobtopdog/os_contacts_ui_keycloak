@@ -30,6 +30,7 @@ export async function getTagByContactId(contactId: string): Promise<ContactTag[]
   return rows.map(toTag);
 }
 
+
 export async function createTag(
   contactId: string,
   username: string,

@@ -8,6 +8,12 @@ import {
   deleteMeeting, postMeetingLink, deleteMeetingLink,
 } from '@/libs/api';
 import type { ContactMeeting, MeetingLink } from '@/types/contact';
+import MeetingGroupTagger from '@/components/MeetingGroupTagger';
+import MeetingTagSelectors from '@/components/MeetingTagSelectors';
+import { tagMeetingWithCommunity } from '@/libs/communitiesApi';
+import { tagMeetingWithGroup } from '@/libs/meetingGroupsApi';
+import MeetingCommunityTags from '@/components/MeetingCommunityTags';
+
 
 interface Props { contactId: string; }
 
@@ -144,6 +150,7 @@ function MeetingLinkRow({
 // ---------------------------------------------------------------------------
 interface MeetingFormState {
   meetingDate: string;
+  title: string;
   notes: string;
   scores: [number, number, number, number];
 }
@@ -151,6 +158,7 @@ interface MeetingFormState {
 function emptyForm(): MeetingFormState {
   return {
     meetingDate: new Date().toISOString().split('T')[0],
+    title: '',
     notes: '',
     scores: [0, 0, 0, 0],
   };
@@ -159,6 +167,7 @@ function emptyForm(): MeetingFormState {
 function formFromMeeting(m: ContactMeeting): MeetingFormState {
   return {
     meetingDate: m.meetingDate,
+    title: m.title,
     notes: m.notes,
     scores: [m.score1, m.score2, m.score3, m.score4],
   };
@@ -184,6 +193,7 @@ function MeetingCard({
   const [newRef, setNewRef] = useState('');
   const [isAddingLink, setIsAddingLink] = useState(false);
   const [error, setError] = useState('');
+  const [editTitle, setEditTitle] = useState(meeting.title);
 
   async function handleSaveEdit() {
     setIsSaving(true);
@@ -192,6 +202,7 @@ function MeetingCard({
       await patchMeeting(meeting.meetingId, {
         username: currentUsername,
         meetingDate: form.meetingDate,
+        title: form.title,
         notes: form.notes,
         score1: form.scores[0],
         score2: form.scores[1],
@@ -278,6 +289,7 @@ function MeetingCard({
                 </div>
               )}
             </div>
+            {meeting.title && <span className="fw-semibold">{meeting.title}</span>}
 
             {/* Notes */}
             {meeting.notes && (
@@ -323,6 +335,19 @@ function MeetingCard({
                 </div>
               )}
             </div>
+            <div className="mt-3">
+              <MeetingGroupTagger meetingId={meeting.meetingId} />
+
+
+            </div>
+            <div className="mt-3">
+              <MeetingCommunityTags meetingId={meeting.meetingId} />
+            </div>
+
+
+
+
+
 
             {error && <div className="alert alert-danger py-1 small mt-2">{error}</div>}
           </>
@@ -341,6 +366,19 @@ function MeetingCard({
                 disabled={isSaving}
               />
             </div>
+            <div className="mb-2">
+  <label className="form-label small fw-medium mb-1">
+    Title <span className="text-danger">*</span>
+  </label>
+  <input
+    type="text"
+    className="form-control"
+    placeholder="Meeting title…"
+    value={form.title}
+    onChange={(e) => setForm({ ...form, title: e.target.value })}
+    disabled={isSaving}
+  />
+</div>
             <div className="mb-2">
               <label className="form-label small fw-medium mb-1">Notes</label>
               <textarea
@@ -411,18 +449,39 @@ function AddMeetingForm({
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
+  const [communityId, setCommunityId] = useState('');
+  const [groupId, setGroupId] = useState('');
+  const [title, setTitle] = useState('');
 
   async function handleSave() {
     setIsSaving(true);
     setError('');
     try {
-      await postMeeting({
+      const meeting = await postMeeting({
         contactId, username,
         meetingDate: form.meetingDate,
+        title: form.title,
         notes: form.notes,
         score1: form.scores[0], score2: form.scores[1],
         score3: form.scores[2], score4: form.scores[3],
       });
+      // Optional tags — failures shouldn't block the meeting save
+      const tagJobs: Promise<unknown>[] = [];
+      if (communityId) {
+        tagJobs.push(tagMeetingWithCommunity({
+          meetingId: meeting.meetingId, communityId, taggedBy: username,
+        }));
+      }
+      if (groupId) {
+        tagJobs.push(tagMeetingWithGroup({
+          meetingId: meeting.meetingId, groupId, taggedBy: username,
+        }));
+      }
+      await Promise.allSettled(tagJobs);
+
+      setCommunityId('');
+      setGroupId('');
+
       setForm(emptyForm());
       setOpen(false);
       onSaved();
@@ -432,6 +491,7 @@ function AddMeetingForm({
       setIsSaving(false);
     }
   }
+
 
   if (!open) {
     return (
@@ -458,6 +518,21 @@ function AddMeetingForm({
         </div>
 
         <div className="mb-2">
+  <label className="form-label small fw-medium mb-1">
+    Title <span className="text-danger">*</span>
+  </label>
+  <input
+    type="text"
+    className="form-control"
+    placeholder="Meeting title…"
+    value={form.title}
+    
+    onChange={(e) => setForm({ ...form, title: e.target.value })}
+    disabled={isSaving}
+  />
+</div>
+
+        <div className="mb-2">
           <label className="form-label small fw-medium mb-1">Notes</label>
           <textarea
             className="form-control"
@@ -468,6 +543,16 @@ function AddMeetingForm({
             disabled={isSaving}
           />
         </div>
+
+
+        <MeetingTagSelectors
+          contactId={contactId}
+          selectedCommunityId={communityId}
+          selectedGroupId={groupId}
+          onCommunityChange={setCommunityId}
+          onGroupChange={setGroupId}
+          disabled={isSaving}
+        />
 
         <div className="mb-3">
           <label className="form-label small fw-medium mb-1">Scores</label>
@@ -512,11 +597,13 @@ export default function ContactMeetings({ contactId }: Props) {
 
   function refresh() {
     queryClient.invalidateQueries({ queryKey: ['meetings', contactId] });
+    queryClient.invalidateQueries({ queryKey: ['meeting-community-tags'] });
+    queryClient.invalidateQueries({ queryKey: ['meeting-group-tags'] });
   }
 
   return (
     <div className="mt-1">
-      
+
 
       {status === 'authenticated' && (
         <AddMeetingForm contactId={contactId} username={username} onSaved={refresh} />
