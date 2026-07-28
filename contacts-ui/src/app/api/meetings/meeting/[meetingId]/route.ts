@@ -12,7 +12,7 @@ function clampScore(value: unknown): number {
 
 /**
  * PATCH /api/meetings/meeting/:meetingId
- * Body: { username, meetingDate, notes, score1, score2, score3, score4 }
+ * Body: { username, meetingDate, title, notes, score1, score2, score3, score4 }
  */
 export async function PATCH(
   request: NextRequest,
@@ -34,7 +34,7 @@ export async function PATCH(
     return NextResponse.json({ error: 'Bad Request', message: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { username, meetingDate, notes, score1, score2, score3, score4 } = body;
+  const { username, meetingDate, title, notes, score1, score2, score3, score4 } = body;
 
   if (!username || String(username).trim() === '') {
     return NextResponse.json({ error: 'Bad Request', message: 'username is required.' }, { status: 400 });
@@ -48,6 +48,7 @@ export async function PATCH(
       meetingId,
       String(username).trim(),
       String(meetingDate),
+      String(title).trim(),
       String(notes ?? '').trim(),
       clampScore(score1),
       clampScore(score2),

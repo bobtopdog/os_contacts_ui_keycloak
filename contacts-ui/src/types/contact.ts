@@ -70,6 +70,7 @@ export interface ContactMeeting {
   contactId: string;
   username: string;
   meetingDate: string;
+  title: string;
   notes: string;
   score1: number;
   score2: number;
@@ -85,6 +86,7 @@ export interface MyContactMeeting {
   contactId: string;
   username: string;
   meetingDate: string;
+  title: string;
   notes: string;
   createdAt: string;
   updatedAt: string;

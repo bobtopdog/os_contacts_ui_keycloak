@@ -10,6 +10,7 @@ import {
 import type { Community, CommunityMember } from '@/types/community';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import UsernameAutocomplete from '@/components/UsernameAutocomplete';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-GB', {
@@ -152,20 +153,20 @@ function CommunityCard({
     }
   }
   const router = useRouter();
- function handleClick(e: React.MouseEvent) {
-        e.preventDefault();
+  function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
 
-        // Close the offcanvas first
-        const offcanvasEl = document.getElementById('offcanvasExample');
-        if (offcanvasEl && typeof window !== 'undefined') {
-            // @ts-expect-error - bootstrap is loaded globally
-            const offcanvas = window.bootstrap?.Offcanvas?.getInstance(offcanvasEl);
-            offcanvas?.hide();
-        }
-
-        // Then navigate data-bs-dismiss="offcanvas"
-        router.push(`/communities/${community.communityId}`);
+    // Close the offcanvas first
+    const offcanvasEl = document.getElementById('offcanvasExample');
+    if (offcanvasEl && typeof window !== 'undefined') {
+      // @ts-expect-error - bootstrap is loaded globally
+      const offcanvas = window.bootstrap?.Offcanvas?.getInstance(offcanvasEl);
+      offcanvas?.hide();
     }
+
+    // Then navigate data-bs-dismiss="offcanvas"
+    router.push(`/communities/${community.communityId}`);
+  }
   return (
     <div className="card border-0 bg-light mb-3">
       <div className="card-body py-2 px-3">
@@ -209,7 +210,7 @@ function CommunityCard({
 
 
             )}
-           
+
 
             <a
               href={`/communities/${community.communityId}`}
@@ -263,12 +264,11 @@ function CommunityCard({
             {community.isCreator && (
               <div className="mt-2">
                 <div className="d-flex gap-2">
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    placeholder="Username to add…"
+
+                  <UsernameAutocomplete
                     value={newMember}
-                    onChange={(e) => setNewMember(e.target.value)}
+                    onChange={setNewMember}
+                    placeholder="Username to add…"
                     disabled={isAddingMember}
                   />
                   <button

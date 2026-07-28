@@ -23,3 +23,12 @@ export interface CommunityTag {
   taggedBy: string;
   createdAt: string;
 }
+
+export interface MeetingCommunityTag {
+  tagId: string;
+  communityId: string;
+  communityName: string;
+  meetingId: string;
+  taggedBy: string;
+  createdAt: string;
+ }

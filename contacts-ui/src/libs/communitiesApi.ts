@@ -1,4 +1,4 @@
-import type { Community, CommunityMember, CommunityTag } from '@/types/community';
+import type { Community, CommunityMember, CommunityTag, MeetingCommunityTag } from '@/types/community';
 
 const NOTES_API = process.env.NEXT_PUBLIC_NOTES_API_URL ?? 'http://localhost:3000';
 
@@ -120,6 +120,51 @@ export async function deleteContactTag(tagId: string, username: string): Promise
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message ?? `Failed to remove tag: ${res.status}`);
+  }
+}
+
+// ---- Meeting community tags ----------------------------------------------
+
+export async function getMeetingCommunityTags(
+  meetingId: string
+): Promise<MeetingCommunityTag[]> {
+  const res = await fetch(`${NOTES_API}/api/communities/meeting-tags/${meetingId}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error(`Failed to fetch meeting community tags: ${res.status}`);
+  return (await res.json()).data;
+}
+
+export async function tagMeetingWithCommunity(payload: {
+  meetingId: string;
+  communityId: string;
+  taggedBy: string;
+}): Promise<MeetingCommunityTag> {
+  const res = await fetch(`${NOTES_API}/api/communities/meeting-tags`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message ?? `Failed to tag meeting: ${res.status}`);
+  }
+  return (await res.json()).data;
+}
+
+export async function removeMeetingCommunityTag(
+  meetingId: string,
+  tagId: string,
+  username: string
+): Promise<void> {
+  const res = await fetch(`${NOTES_API}/api/communities/meeting-tags/${meetingId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tagId, username }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));

@@ -261,3 +261,85 @@ export async function getContactIdsByCommunity(communityId: string): Promise<str
   );
   return rows.map((r) => r.contact_id);
 }
+
+export interface MeetingCommunityTagRow {
+  tag_id: string;
+  community_id: string;
+  community_name: string;
+  meeting_id: string;
+  tagged_by: string;
+  created_at: Date;
+}
+
+// Get community tags for a contact meeting
+export async function getMeetingCommunityTags(meetingId: string) {
+  const rows = await notesQuery<MeetingCommunityTagRow>(
+    `SELECT t.tag_id, t.community_id, c.name AS community_name,
+            t.meeting_id, t.tagged_by, t.created_at
+     FROM community_meeting_tags t
+     JOIN communities c ON c.community_id = t.community_id
+     WHERE t.meeting_id = $1
+     ORDER BY t.created_at DESC`,
+    [meetingId]
+  );
+  return rows.map((r) => ({
+    tagId: r.tag_id,
+    communityId: r.community_id,
+    communityName: r.community_name,
+    meetingId: r.meeting_id,
+    taggedBy: r.tagged_by,
+    createdAt: r.created_at.toISOString(),
+  }));
+}
+
+// Tag a meeting with a community — user must be a member of the community.
+// Returns null if not a member; ON CONFLICT ignores duplicate tags.
+export async function tagMeetingWithCommunity(
+  meetingId: string,
+  communityId: string,
+  taggedBy: string
+) {
+  const memberCheck = await notesQuery<{ member_id: string }>(
+    `SELECT member_id FROM community_members
+     WHERE community_id = $1 AND username = $2`,
+    [communityId, taggedBy]
+  );
+  if (memberCheck.length === 0) return null;
+
+  const rows = await notesQuery<MeetingCommunityTagRow>(
+    `INSERT INTO community_meeting_tags (meeting_id, community_id, tagged_by)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (community_id, meeting_id) DO NOTHING
+     RETURNING tag_id, community_id, meeting_id, tagged_by, created_at`,
+    [meetingId, communityId, taggedBy]
+  );
+  if (rows.length === 0) return null; // duplicate tag
+
+  const nameRows = await notesQuery<{ name: string }>(
+    `SELECT name FROM communities WHERE community_id = $1`,
+    [communityId]
+  );
+
+  return {
+    tagId: rows[0].tag_id,
+    communityId: rows[0].community_id,
+    communityName: nameRows[0].name,
+    meetingId: rows[0].meeting_id,
+    taggedBy: rows[0].tagged_by,
+    createdAt: rows[0].created_at.toISOString(),
+  };
+}
+
+// Remove a meeting community tag — only the tagger can remove
+export async function removeMeetingCommunityTag(
+  tagId: string,
+  username: string
+): Promise<boolean> {
+  const rows = await notesQuery<{ tag_id: string }>(
+    `DELETE FROM community_meeting_tags
+     WHERE tag_id = $1 AND tagged_by = $2
+     RETURNING tag_id`,
+    [tagId, username]
+  );
+  return rows.length > 0;
+}

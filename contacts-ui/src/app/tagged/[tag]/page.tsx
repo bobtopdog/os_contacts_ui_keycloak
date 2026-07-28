@@ -18,7 +18,7 @@ export default async function TaggedContactsPage({ params }: Props) {
   // Step 1 — get all contact_ids for this user from the notes DB
   let contactIds: string[] = [];
   try {
-    contactIds = await getTagContactIds(tag);
+    contactIds = await getTagContactIds(decodeURIComponent(tag));
   } catch (err) {
     console.error('Failed to fetch tag contact IDs:', err);
   }
@@ -41,7 +41,7 @@ export default async function TaggedContactsPage({ params }: Props) {
       <div className="mb-4">
         <p className="lead ">Tagged Contacts</p>
         <p className="text-muted mb-0">
-          Contacts that have been tagged: <b>{tag}</b>
+          Contacts that have been tagged: <b>{decodeURIComponent(tag)}</b>
         </p>
       </div>
 
@@ -49,7 +49,7 @@ export default async function TaggedContactsPage({ params }: Props) {
       {contacts.length === 0 && (
         <div className="text-center text-muted py-5">
           <div style={{ fontSize: '3rem' }}>📋</div>
-          <p className="mt-2">No contacts have yet been tagged as {tag} </p>
+          <p className="mt-2">No contacts have yet been tagged as {decodeURIComponent(tag)} </p>
           
         </div>
       )}

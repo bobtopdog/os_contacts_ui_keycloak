@@ -10,6 +10,10 @@
     "lint": "eslint",
     "db:migrate:notes": "node scripts/migrate-notes.cjs",
     "db:migrate:communities": "node scripts/communities.cjs",
+    "db:migrate:minister-meetings": "node scripts/minister-meetings.cjs",
+    "db:migrate:meeting-groups": "node scripts/migrate-meeting-groups.cjs",
+    "db:migrate:community-meeting-tags": "node scripts/migrate-community-meeting-tags.cjs",
+    "db:migrate:migrate-meeting-title": "node scripts/migrate-meeting-title.cjs",
     "dev:clean": "rm -rf .next/dev/cache .turbo && next dev"
   },
   "dependencies": {
@@ -23,6 +27,7 @@
     "dotenv": "^17.4.2",
     "next": "16.2.4",
     "next-auth": "^4.24.14",
+    "nodemailer": "^7.0.13",
     "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -30,6 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.1",
     "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",

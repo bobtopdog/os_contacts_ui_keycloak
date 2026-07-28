@@ -4,17 +4,18 @@ import { getMember } from "@/libs/ministers/api-client";
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import MinisterNotes from "@/components/MinisterNotes";
+import MinisterMeetings from "@/components/MinisterMeetings";
 
 export const dynamic = "force-dynamic";
 
 function partyBadgeClass(party: string | null): string {
   if (!party) return "bg-secondary";
   const p = party.toLowerCase();
-  if (p.includes("labour"))       return "bg-danger";
+  if (p.includes("labour")) return "bg-danger";
   if (p.includes("conservative")) return "bg-primary";
-  if (p.includes("liberal"))      return "bg-warning text-dark";
-  if (p.includes("green"))        return "bg-success";
-  if (p.includes("snp"))          return "bg-warning text-dark";
+  if (p.includes("liberal")) return "bg-warning text-dark";
+  if (p.includes("green")) return "bg-success";
+  if (p.includes("snp")) return "bg-warning text-dark";
   return "bg-secondary";
 }
 
@@ -22,19 +23,19 @@ function formatDate(d: string | null): string {
   if (!d) return "—";
   // dates come from the API as ISO date strings (YYYY-MM-DD)
   return new Date(d).toLocaleDateString("en-GB", {
-    day:   "numeric",
+    day: "numeric",
     month: "long",
-    year:  "numeric",
+    year: "numeric",
   });
 }
 
 export default async function MemberDetailPage({
   params,
 }: {
-  params: Promise<{ id: string }>; 
+  params: Promise<{ id: string }>;
 }) {
   const { id: idStr } = await params;
-  const id = Number(idStr); 
+  const id = Number(idStr);
 
   let member;
   try {
@@ -47,12 +48,12 @@ export default async function MemberDetailPage({
   }
 
   const currentPosts = member.posts_held.filter((p) => p.is_current);
-  const formerPosts  = member.posts_held.filter((p) => !p.is_current);
+  const formerPosts = member.posts_held.filter((p) => !p.is_current);
   const session = await getServerSession(authOptions);
 
   return (
     <>
-   
+
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb">
           <li className="breadcrumb-item">
@@ -65,7 +66,7 @@ export default async function MemberDetailPage({
       </nav>
 
       {/* Header card */}
-    
+
       <p className="lead">Government post-holders</p>
       <div className="card mb-4 shadow-sm">
         <div className="card-body">
@@ -90,7 +91,21 @@ export default async function MemberDetailPage({
       <div className="row g-4">
         {/* Posts column */}
         <div className="col-lg-7">
-          <h2 className="h5 mb-3">Government posts</h2>
+          <ul className="nav nav-tabs" role="tablist">
+            <li className="nav-item" role="presentation">
+              <a className="nav-link active" data-bs-toggle="tab" href="#posts" aria-selected="true" role="tab">Government posts</a>
+            </li>
+            <li className="nav-item" role="presentation">
+              <a className="nav-link" data-bs-toggle="tab" href="#meetings" aria-selected="false"  role="tab">Meetings</a>
+            </li>
+            <li className="nav-item" role="presentation">
+              <a className="nav-link" data-bs-toggle="tab" href="#notes" aria-selected="false"  role="tab">Notes</a>
+            </li>
+
+          </ul>
+          <div id="myTabContent" className="tab-content">
+            <div className="tab-pane fade show active" id="posts" role="tabpanel">
+             <h2 className="h5 mb-3">Government posts</h2>
 
           {currentPosts.length > 0 && (
             <div className="mb-4">
@@ -140,12 +155,19 @@ export default async function MemberDetailPage({
           {member.posts_held.length === 0 && (
             <div className="alert alert-light">No post history recorded.</div>
           )}
-
-          <div>
-            <MinisterNotes memberId={member.id} />
-
-         
+            </div>
+            <div className="tab-pane fade" id="meetings" role="tabpanel">
+              <h2 className="h5 mb-3">Meetings</h2>
+               <MinisterMeetings ministerId={member.id} />
+            </div>
+            <div className="tab-pane fade" id="notes" role="tabpanel">
+              <h2 className="h5 mb-3">Notes</h2>
+              <MinisterNotes memberId={member.id} />
+            </div>
           </div>
+
+
+
 
 
         </div>
@@ -171,9 +193,9 @@ export default async function MemberDetailPage({
                   {c.phone && (
                     <div className="mb-1">
                       <span className="text-muted small me-2">📞</span>
-                      
-                        {c.phone}
-                      
+
+                      {c.phone}
+
                     </div>
                   )}
                   {c.email && (

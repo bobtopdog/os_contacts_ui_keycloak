@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getNotes, postNote, patchNote, deleteNote } from '@/libs/api';
+import { getNotes, postNote, patchNote, deleteNote, movePrivateNote } from '@/libs/api';
 import type { ContactNote } from '@/types/contact';
 
 interface Props {
@@ -25,11 +25,13 @@ function NoteCard({
   currentUsername,
   onUpdate,
   onDelete,
+  onMove,
 }: {
   note: ContactNote;
   currentUsername: string;
   onUpdate: (noteId: string, comment: string) => Promise<void>;
   onDelete: (noteId: string) => Promise<void>;
+  onMove: (noteId: string) => Promise<void>;
 }) {
   const isOwner = note.username === currentUsername;
   const [isEditing, setIsEditing] = useState(false);
@@ -37,7 +39,10 @@ function NoteCard({
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmMove, setConfirmMove] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
   const [error, setError] = useState('');
+  
 
   async function handleSaveEdit() {
     if (!editValue.trim()) return;
@@ -71,6 +76,18 @@ function NoteCard({
     }
   }
 
+  async function handleConfirmMove() {
+    setIsMoving(true);
+    setError('');
+    try {
+      await onMove(note.noteId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to move note');
+      setIsMoving(false);
+      setConfirmMove(false);
+    }
+  }
+
   return (
     <div className={`card border-0 mb-3 ${isOwner ? 'bg-primary bg-opacity-10' : 'bg-light'}`}>
       <div className="card-body py-2 px-3">
@@ -95,6 +112,13 @@ function NoteCard({
                     title="Edit note"
                   >
                     ✏️ Edit 
+                  </button>
+                  <button
+                    className="btn btn-outline-info btn-sm py-0"
+                    onClick={() => setConfirmMove(true)}
+                    title="Move to anex notes"
+                  >
+                    📤 Move
                   </button>
                   <button
                     className="btn btn-outline-danger btn-sm py-0"
@@ -174,6 +198,36 @@ function NoteCard({
           </>
         )}
 
+                {/* Move confirmation */}
+        {confirmMove && (
+          <>
+            <p className="mb-2 text-info fw-medium">
+              📤 Move this note to the anex notes? It will no longer appear in your private notes.
+            </p>
+            {error && (
+              <div className="alert alert-danger py-1 small mb-2">{error}</div>
+            )}
+            <div className="d-flex justify-content-end gap-2">
+              <button
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => setConfirmMove(false)}
+                disabled={isMoving}
+              >
+                Cancel
+              </button>
+              <button
+                className="btn btn-info btn-sm"
+                onClick={handleConfirmMove}
+                disabled={isMoving}
+              >
+                {isMoving
+                  ? <><span className="spinner-border spinner-border-sm me-1" />Moving…</>
+                  : 'Yes, move'}
+              </button>
+            </div>
+          </>
+        )}
+
       </div>
     </div>
   );
@@ -210,6 +264,16 @@ export default function ContactNotes({ contactId }: Props) {
   async function handleDelete(noteId: string) {
     await deleteNote(noteId, username);
     queryClient.invalidateQueries({ queryKey: ['notes', contactId] });
+  }
+
+  async function handleMove(noteId: string) {
+    await movePrivateNote(noteId, username);
+    // The note is moved so it will disappear from the private notes list
+    queryClient.invalidateQueries({ queryKey: ['notes', contactId] });
+    queryClient.invalidateQueries({ queryKey: ['anexnotes', contactId] });
+
+    // If you have a separate query for anex notes, also invalidate that:
+    // queryClient.invalidateQueries({ queryKey: ['anex-notes', contactId] });
   }
 
   function handleSave() {
@@ -279,6 +343,7 @@ export default function ContactNotes({ contactId }: Props) {
               currentUsername={username}
               onUpdate={handleUpdate}
               onDelete={handleDelete}
+              onMove={handleMove}
             />
           ))}
         </div>

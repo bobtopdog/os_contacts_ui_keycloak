@@ -12,7 +12,7 @@ function clampScore(value: unknown): number {
 
 /** 
  * POST /api/meetings 
- * Body: { contactId, username, meetingDate, notes, score1, score2, score3, score4 } 
+ * Body: { contactId, username, meetingDate, title, notes, score1, score2, score3, score4 } 
  */ 
 
 export async function POST(request: NextRequest) { 
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       { status: 400 } 
     ); 
   } 
-  const { contactId, username, meetingDate, notes, score1, score2, score3, score4 } = body; 
+  const { contactId, username, meetingDate, title, notes, score1, score2, score3, score4 } = body; 
   if (!contactId || !isValidUuid(String(contactId))) { 
 
     return NextResponse.json( 
@@ -42,18 +42,25 @@ export async function POST(request: NextRequest) {
     ); 
   } 
 
+   
   if (!meetingDate) { 
     return NextResponse.json( 
       { error: 'Bad Request', message: 'meetingDate is required.' }, 
       { status: 400 } 
     ); 
   } 
-
+if (!title) { 
+    return NextResponse.json( 
+      { error: 'Bad Request', message: 'title is required.' }, 
+      { status: 400 } 
+    ); 
+  } 
   try { 
     const meeting = await createMeeting( 
       String(contactId), 
       String(username).trim(), 
       String(meetingDate), 
+      String(title).trim(),
       String(notes ?? '').trim(), 
       clampScore(score1), 
       clampScore(score2), 

@@ -8,12 +8,12 @@ import { getNotesByMemberId } from '@/libs/ministers/notesRepository';
  */
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<{ memberId: number }> }
+  { params }: { params: Promise<{ memberId: string }> }
 ) {
   const { memberId } = await params;
-
+const id = Number(memberId);
   try {
-    const notes = await getNotesByMemberId(memberId);
+    const notes = await getNotesByMemberId(id);
     return NextResponse.json({ data: notes });
   } catch (err) {
     console.error(`GET /api/ministernotes/${memberId} error:`, err);

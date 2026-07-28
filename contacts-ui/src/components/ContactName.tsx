@@ -8,7 +8,7 @@ export default function ContactName({contactId}: {contactId: string}) {
    if (isLoading) return <span className="text-muted small">Loading</span>;
    if (!contact) return <span className="text-muted small">Unknown</span>;
 
-   return <p>{contact?.fullName}</p>;
+   return <strong>{contact?.fullName}</strong>;
 }
 
 

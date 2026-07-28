@@ -8,6 +8,7 @@ import type { Team, UserTeam } from '@/types/contact';
 import MyNotes from '@/components/MyNotes';
 import MyMeetings from '@/components/MyMeetings';
 import CommunitiesPanel from '@/components/CommunitiesPanel';
+import MeetingGroupsPanel from '@/components/MeetingGroupsPanel';
 
 // ---------------------------------------------------------------------------
 // Profile info card — populated from session token
@@ -349,6 +350,9 @@ export default function ProfilePanel() {
         <li className="nav-item" role="presentation">
           <button className="nav-link" id="community-tab" data-bs-toggle="tab" data-bs-target="#community" type="button" role="tab" aria-controls="community" aria-selected="false">My Community</button>
         </li>
+        <li className="nav-item" role="presentation">
+          <button className="nav-link" id="mailgroup-tab" data-bs-toggle="tab" data-bs-target="#mailgroup" type="button" role="tab" aria-controls="mailgroup" aria-selected="false">My Mail Groups</button>
+        </li>
       </ul>
       <div className="tab-content" id="myTabContent">
         <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -386,6 +390,20 @@ export default function ProfilePanel() {
             </div>
             <div className="card-body">
                <CommunitiesPanel />
+            </div>
+
+          </div>
+
+
+
+        </div>
+        <div className="tab-pane fade" id="mailgroup" role="tabpanel" aria-labelledby="mailgroup-tab">
+          <div className="card border-0 shadow-sm">
+            <div className="card-header bg-white border-bottom py-3">
+              <h5 className="fw-semibold mb-0">👥 My Mail Groups</h5>
+            </div>
+            <div className="card-body">
+               <MeetingGroupsPanel />
             </div>
 
           </div>

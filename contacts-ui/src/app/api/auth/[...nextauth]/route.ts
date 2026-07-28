@@ -52,6 +52,10 @@ export const authOptions: AuthOptions = {
     }),
   ],
 
+  pages: {
+    signIn: '/auth/signin',
+    },
+
   callbacks: {
     // Pull the preferred_username (or email) from the Keycloak token
     // into the session so components can access it easily

@@ -30,7 +30,7 @@ export default function ContactAnex({ contactId }: Props) {
           </div>
         <div className="col-auto">
           <button type="button" className="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#scoringModal">
-          <Icon path={mdiCardAccountDetailsStarOutline} size={1} /> Meeting Scoring</button>
+          <Icon path={mdiCardAccountDetailsStarOutline} size={1} /> Meetings & Scoring</button>
         </div>
     </div>
    
@@ -89,7 +89,7 @@ export default function ContactAnex({ contactId }: Props) {
   <div className="modal-dialog modal-lg modal-dialog-scrollable">
     <div className="modal-content">
       <div className="modal-header">
-        <h5 className="modal-title" id="scoringModalLabel">Meeting Scoring</h5>
+        <h5 className="modal-title" id="scoringModalLabel">Meetings & Scoring</h5>
         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div className="modal-body scroll110 ">
