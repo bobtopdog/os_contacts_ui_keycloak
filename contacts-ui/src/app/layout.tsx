@@ -1,7 +1,6 @@
 'use client'
 import React from 'react';
 
-import { getServerSession } from 'next-auth';
   import { 
     IcClassificationBanner,
     IcFooter,
@@ -33,6 +32,7 @@ export default  function RootLayout({
   children: React.ReactNode;
 }>) {
 const alignment: IcAlignment = "center";
+
   let pageHeaderAlignment;
     // pageHeaderAlignment: IcAlignment = "center";
     const useStyles = createUseStyles({
@@ -49,6 +49,7 @@ const alignment: IcAlignment = "center";
 
 
 
+
   return (
    <>
       <html lang="en">
@@ -61,7 +62,7 @@ const alignment: IcAlignment = "center";
        
         <IcTopNavigation
           appTitle="OPUS STORM"
-          status="Phase 1.0"
+          status="Phase 3.1"
           version=""
           contentAligned={alignment}
         >
@@ -101,6 +102,10 @@ const alignment: IcAlignment = "center";
           <IcNavigationItem slot="navigation" label="My contacts" href="/mycontacts" title="My contacts" />
           <IcNavigationItem slot="navigation" label="Teams" href="#collapseExample" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapseExample"/>
           <IcNavigationItem slot="navigation" label="Help" href="/help" title="Help" />
+          <IcNavigationItem slot="navigation" label="Network" href="/network" title="Network" />
+          
+          <IcNavigationItem slot="navigation" label="Admin" href="/admin" title="Admin" />
+
         </IcTopNavigation>
             
         

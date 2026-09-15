@@ -24,7 +24,7 @@ export async function getAreaByContactId(contactId: string): Promise<ContactArea
     `SELECT area_id, contact_id, username, area, created_at
      FROM contact_areas
      WHERE contact_id = $1
-     ORDER BY created_at DESC`,
+     ORDER BY area ASC`,
     [contactId]
   );
   return rows.map(toArea);

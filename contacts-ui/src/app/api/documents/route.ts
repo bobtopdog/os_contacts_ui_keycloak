@@ -4,9 +4,14 @@ import {
   MAX_FILE_SIZE_BYTES,
   isAllowedMimeType,
   isAllowedExtension,
+  isValidCategory,
+  DOCUMENT_CATEGORIES,
 } from '@/libs/documentConfig';
 
-
+// Disable Next.js default 4MB body limit so we can handle up to 2MB ourselves
+export const config = {
+  api: { bodyParser: false },
+};
 
 function isValidUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
@@ -14,7 +19,7 @@ function isValidUuid(value: string): boolean {
 
 /**
  * POST /api/documents
- * Multipart form data: contactId, username, file
+ * Multipart form data: contactId, username, category, file
  */
 export async function POST(request: NextRequest) {
   let formData: FormData;
@@ -29,6 +34,7 @@ export async function POST(request: NextRequest) {
 
   const contactId = formData.get('contactId') as string;
   const username = formData.get('username') as string;
+  const category = formData.get('category') as string;
   const file = formData.get('file') as File | null;
 
   if (!contactId || !isValidUuid(contactId)) {
@@ -40,6 +46,16 @@ export async function POST(request: NextRequest) {
   if (!username?.trim()) {
     return NextResponse.json(
       { error: 'Bad Request', message: 'username is required.' },
+      { status: 400 }
+    );
+  }
+  // Category is REQUIRED and must be one of the fixed values
+  if (!category || !isValidCategory(category)) {
+    return NextResponse.json(
+      {
+        error: 'Bad Request',
+        message: `A valid category is required. Accepted: ${DOCUMENT_CATEGORIES.join(', ')}.`,
+      },
       { status: 400 }
     );
   }
@@ -76,6 +92,7 @@ export async function POST(request: NextRequest) {
       file.name,
       file.type || 'application/octet-stream',
       file.size,
+      category,
       buffer
     );
 

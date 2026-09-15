@@ -30,7 +30,7 @@ export default function ContactAnex({ contactId }: Props) {
           </div>
         <div className="col-auto">
           <button type="button" className="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#scoringModal">
-          <Icon path={mdiCardAccountDetailsStarOutline} size={1} /> Meetings & Scoring</button>
+          <Icon path={mdiCardAccountDetailsStarOutline} size={1} /> Add Meetings & Scoring</button>
         </div>
     </div>
    

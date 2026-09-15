@@ -24,7 +24,7 @@ export async function getTagByContactId(contactId: string): Promise<ContactTag[]
     `SELECT tag_id, contact_id, username, tag, created_at
      FROM contact_tag
      WHERE contact_id = $1
-     ORDER BY created_at DESC`,
+     ORDER BY tag ASC`,
     [contactId]
   );
   return rows.map(toTag);
@@ -67,7 +67,7 @@ export async function getTagContactIds(tag: string): Promise<string[]> {
     `SELECT contact_id
      FROM contact_tag
      WHERE tag = $1
-     ORDER BY created_at DESC`,
+     ORDER BY tag ASC`,
     [tag]
   );
   return rows.map((r) => r.contact_id);

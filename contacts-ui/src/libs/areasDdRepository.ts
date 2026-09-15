@@ -14,7 +14,7 @@ function toArea(row: AreasRow): Areas{
 // All available teams for the dropdown
 export async function getAllAreas(): Promise<Areas[]> {
   const rows = await notesQuery<AreasRow>(
-    `SELECT id, area FROM areas ORDER BY area ASC`
+    `SELECT id, area FROM areas WHERE active = true ORDER BY area ASC`
   );
   return rows.map(toArea);
 }

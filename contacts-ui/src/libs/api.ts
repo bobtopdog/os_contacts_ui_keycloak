@@ -394,6 +394,7 @@ export async function getDocuments(contactId: string): Promise<ContactDocument[]
 export async function uploadDocument(
   contactId: string,
   username: string,
+  category: string,
   file: File,
   onProgress?: (pct: number) => void
 ): Promise<ContactDocument> {
@@ -401,6 +402,7 @@ export async function uploadDocument(
     const formData = new FormData();
     formData.append('contactId', contactId);
     formData.append('username', username);
+    formData.append('category', category);
     formData.append('file', file);
 
     const xhr = new XMLHttpRequest();

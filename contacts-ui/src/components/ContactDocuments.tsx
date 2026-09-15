@@ -8,6 +8,7 @@ import {
   MAX_FILE_SIZE_BYTES,
   FILE_INPUT_ACCEPT,
   ALLOWED_EXTENSIONS,
+  DOCUMENT_CATEGORIES,
   isAllowedExtension,
   formatFileSize,
   fileIcon,
@@ -24,7 +25,7 @@ function formatDate(iso: string) {
 }
 
 // ---------------------------------------------------------------------------
-// DocumentRow — single file entry with download + delete
+// DocumentRow — single file entry with category badge, download + delete
 // ---------------------------------------------------------------------------
 function DocumentRow({
   doc, currentUsername, onDelete,
@@ -68,6 +69,11 @@ function DocumentRow({
                     {doc.filename}
                   </a>
                   <small className="text-muted">
+                    {doc.category && (
+                      <span className="badge bg-info text-dark rounded-pill me-1">
+                        {doc.category}
+                      </span>
+                    )}
                     {formatFileSize(doc.fileSize)} &middot; 👤 <strong>{doc.username}</strong>
                     {isOwner && <span className="badge bg-primary ms-1 rounded-pill">you</span>}
                     {' '}&middot;{' '}{formatDate(doc.createdAt)}
@@ -139,6 +145,7 @@ export default function ContactDocuments({ contactId }: Props) {
   const username = session?.user?.username ?? '';
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [category, setCategory] = useState('');
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -169,14 +176,15 @@ export default function ContactDocuments({ contactId }: Props) {
   }
 
   async function handleUpload() {
-    if (!selectedFile || !username) return;
+    if (!selectedFile || !username || !category) return;
     setIsUploading(true);
     setUploadProgress(0);
     setUploadError('');
 
     try {
-      await uploadDocument(contactId, username, selectedFile, setUploadProgress);
+      await uploadDocument(contactId, username, category, selectedFile, setUploadProgress);
       setSelectedFile(null);
+      setCategory('');
       setUploadProgress(0);
       if (fileInputRef.current) fileInputRef.current.value = '';
       queryClient.invalidateQueries({ queryKey: ['documents', contactId] });
@@ -193,34 +201,53 @@ export default function ContactDocuments({ contactId }: Props) {
   }
 
   return (
-    <div className="mt-1">
-      
+    <div className="mt-4">
+      <h5 className="fw-semibold mb-3">📎 Documents</h5>
 
       {/* Upload area — authenticated users only */}
       {status === 'authenticated' ? (
         <div className="card border-0 shadow-sm mb-4">
           <div className="card-body">
-            <p className="fw-medium mb-2">Upload a document. <span className="text-danger">IMPORTANT. Only upload documents classified as S2 or below</span></p>
+            <p className="fw-medium mb-2">Upload a document</p>
 
-            <div className="mb-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="form-control"
-                accept={FILE_INPUT_ACCEPT}
-                onChange={handleFileChange}
-                disabled={isUploading}
-              />
-              <small className="text-muted d-block mt-1">
-                Accepted: PDF, Word, Excel, MSG, EML &middot; Max 2MB
-              </small>
+            <div className="row g-2 mb-2">
+              <div className="col-12 col-md-7">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="form-control"
+                  accept={FILE_INPUT_ACCEPT}
+                  onChange={handleFileChange}
+                  disabled={isUploading}
+                />
+              </div>
+              <div className="col-12 col-md-5">
+                {/* Category — REQUIRED */}
+                <select
+                  className="form-select"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  disabled={isUploading}
+                >
+                  <option value="">Select a category…</option>
+                  {DOCUMENT_CATEGORIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
             </div>
+            <small className="text-muted d-block mb-2">
+              Accepted: PDF, Word, Excel, MSG, EML &middot; Max 2MB &middot; Category is required
+            </small>
 
             {/* Selected file preview */}
             {selectedFile && !uploadError && (
               <div className="alert alert-info py-2 small mb-2 d-flex align-items-center gap-2">
                 <span>{fileIcon(selectedFile.name)}</span>
                 <span><strong>{selectedFile.name}</strong> ({formatFileSize(selectedFile.size)})</span>
+                {category && (
+                  <span className="badge bg-info text-dark rounded-pill ms-auto">{category}</span>
+                )}
               </div>
             )}
 
@@ -250,7 +277,8 @@ export default function ContactDocuments({ contactId }: Props) {
               <button
                 className="btn btn-primary btn-sm px-4"
                 onClick={handleUpload}
-                disabled={!selectedFile || isUploading || !!uploadError}
+                disabled={!selectedFile || !category || isUploading || !!uploadError}
+                title={!category ? 'Select a category first' : undefined}
               >
                 {isUploading
                   ? <><span className="spinner-border spinner-border-sm me-1" />Uploading…</>

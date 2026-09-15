@@ -98,6 +98,7 @@ export interface ContactDocument {
   filename: string;
   mimeType: string;
   fileSize: number;
+  category: string;
   createdAt: string;
 }
 export interface ContactAnexNote {

@@ -14,6 +14,7 @@
     "db:migrate:meeting-groups": "node scripts/migrate-meeting-groups.cjs",
     "db:migrate:community-meeting-tags": "node scripts/migrate-community-meeting-tags.cjs",
     "db:migrate:migrate-meeting-title": "node scripts/migrate-meeting-title.cjs",
+    "db:migrate:document-category": "node scripts/migrate-document-category.cjs",
     "dev:clean": "rm -rf .next/dev/cache .turbo && next dev"
   },
   "dependencies": {
@@ -25,12 +26,14 @@
     "@ukic/react": "^3.24.0",
     "bootstrap": "^5.3.8",
     "dotenv": "^17.4.2",
+    "jspdf": "^4.2.1",
     "next": "16.2.4",
     "next-auth": "^4.24.14",
     "nodemailer": "^7.0.13",
     "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-force-graph-2d": "^1.29.1",
     "react-jss": "^10.10.0"
   },
   "devDependencies": {

@@ -182,18 +182,18 @@ export default function ContactPoc({ contactId }: Props) {
               >
                 {addMutation.isPending ? (
                   <><span className="spinner-border spinner-border-sm me-1" role="status" />Saving…</>
-                ) : 'Add self as PoC'}
+                ) : 'Add self as point of contact'}
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="alert alert-info py-2 small mb-4">You are already a PoC.</div>
+        <div className="alert alert-info py-2 small mb-4">You are already a point of contact.</div>
       )}
 
       {isLoading && (
         <div className="text-center text-muted py-3">
-          <span className="spinner-border spinner-border-sm me-2" />Loading Poc…
+          <span className="spinner-border spinner-border-sm me-2" />Loading Point of Contact…
         </div>
       )}
 
@@ -202,7 +202,7 @@ export default function ContactPoc({ contactId }: Props) {
       )}
 
       {pocs && pocs.length === 0 && (
-        <p className="text-muted small">No PoC yet for this contact.</p>
+        <p className="text-muted small">No Point of Contact yet for this contact.</p>
       )}
 
       {pocs && pocs.length > 0 && (

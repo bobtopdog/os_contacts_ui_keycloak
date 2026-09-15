@@ -33,7 +33,7 @@ function toUserTeam(row: UserTeamRow): UserTeam {
 // All available teams for the dropdown
 export async function getAllTeams(): Promise<Team[]> {
   const rows = await notesQuery<TeamRow>(
-    `SELECT team_id, team_name FROM teams ORDER BY team_name ASC`
+    `SELECT team_id, team_name FROM teams WHERE active = true ORDER BY team_name ASC`
   );
   return rows.map(toTeam);
 }

@@ -1,5 +1,22 @@
 export const MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024; // 2MB
 
+// ---------------------------------------------------------------------------
+// Document categories — REQUIRED at upload.
+// Placeholder values until the client confirms the real names; rename here
+// and the dropdown, validation and badges all update together.
+// ---------------------------------------------------------------------------
+export const DOCUMENT_CATEGORIES = [
+  'Official',
+  'Official Sensitive',
+  'S1',
+  'S2',
+  'Commercial',
+];
+
+export function isValidCategory(category: string): boolean {
+  return DOCUMENT_CATEGORIES.includes(category);
+}
+
 export const ALLOWED_MIME_TYPES: Record<string, string> = {
   'application/pdf': '.pdf',
   'application/msword': '.doc',

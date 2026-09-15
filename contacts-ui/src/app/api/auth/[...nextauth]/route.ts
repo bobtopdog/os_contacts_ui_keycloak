@@ -13,12 +13,20 @@ export const authOptions: AuthOptions = {
  
 
 callbacks: { 
-    async jwt({ token, profile }) { 
-      if (profile) { 
+    async jwt({ token, account, profile }) { 
+      if (account && profile) { 
+        const p = profile as Record<string, unknown>;
+        const realmAccess = p.realm_access as { roles?: string[] } | undefined;
+
         // GitHub exposes login as the username 
         token.username = (profile as Record<string, unknown>).login as string 
           ?? token.email 
           ?? 'unknown'; 
+        token.roles = realmAccess?.roles
+          ?? (p.roles as string[] | undefined)
+          ?? ['placeholder-role-viewer', 'admin'];
+
+          
       } 
       return token; 
     }, 
@@ -29,6 +37,7 @@ async session({ session, token }) {
         ...session.user, 
         
         username: token.username as string, 
+        roles: token.roles as string[],
       }; 
       return session; 
     }, 

@@ -1,5 +1,5 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -75,14 +75,7 @@ function ProfileCard({ name, username, email, image }: {
             </div>
           </div>
         )}
-        <div className="d-flex align-items-start gap-3 py-2">
-          <span style={{ width: '1.5rem', textAlign: 'center' }}>🔐</span>
-          <div>
-            <div className="text-muted small">Authentication</div>
-            <div className="fw-medium">GitHub OAuth
-            </div>
-          </div>
-        </div>
+
       </div>
     </div>
   );
@@ -101,6 +94,7 @@ function UserTeamRow({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState('');
+  const router = useRouter();
 
   async function handleDelete() {
     setIsDeleting(true);
@@ -113,7 +107,20 @@ function UserTeamRow({
       setConfirmDelete(false);
     }
   }
+  function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
 
+    // Close the offcanvas first
+    const offcanvasEl = document.getElementById('offcanvasExample');
+    if (offcanvasEl && typeof window !== 'undefined') {
+      // @ts-expect-error - bootstrap is loaded globally
+      const offcanvas = window.bootstrap?.Offcanvas?.getInstance(offcanvasEl);
+      offcanvas?.hide();
+    }
+
+    // Then navigate data-bs-dismiss="offcanvas"
+    router.push(`/teams/${userTeam.teamId}`);
+  }
   return (
     <div className="card border-0 bg-light mb-2">
       <div className="card-body py-2 px-3">
@@ -123,7 +130,14 @@ function UserTeamRow({
               <div className="d-flex align-items-center gap-2">
                 <span style={{ fontSize: '1.2rem' }}>👥</span>
                 <div>
-                  <span className="fw-medium">{userTeam.teamName}</span>
+
+                  <a
+                    href={`/teams/${userTeam.teamId}`}
+                    onClick={handleClick}
+                    className="text-decoration-none " data-bs-dismiss="offcanvas"
+                  >
+                    <span className="fw-medium">{userTeam.teamName}</span>
+                  </a>
                   {userTeam.isPrimary && (
                     <span className="badge bg-success ms-2 rounded-pill">
                       ⭐ Primary contact
@@ -342,7 +356,7 @@ export default function ProfilePanel() {
           <button className="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Teams</button>
         </li>
         <li className="nav-item" role="presentation">
-          <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">My Notes</button>
+          <button className="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">My Private Notes</button>
         </li>
         <li className="nav-item" role="presentation">
           <button className="nav-link" id="meeting-tab" data-bs-toggle="tab" data-bs-target="#meeting" type="button" role="tab" aria-controls="meeting" aria-selected="false">My Meetings</button>
@@ -371,7 +385,7 @@ export default function ProfilePanel() {
             </div>
 
           </div>
-          </div>
+        </div>
         <div className="tab-pane fade" id="meeting" role="tabpanel" aria-labelledby="meeting-tab">
           <div className="card border-0 shadow-sm">
             <div className="card-header bg-white border-bottom py-3">
@@ -389,7 +403,7 @@ export default function ProfilePanel() {
               <h5 className="fw-semibold mb-0">👥 My Communities</h5>
             </div>
             <div className="card-body">
-               <CommunitiesPanel />
+              <CommunitiesPanel />
             </div>
 
           </div>
@@ -403,7 +417,7 @@ export default function ProfilePanel() {
               <h5 className="fw-semibold mb-0">👥 My Mail Groups</h5>
             </div>
             <div className="card-body">
-               <MeetingGroupsPanel />
+              <MeetingGroupsPanel />
             </div>
 
           </div>

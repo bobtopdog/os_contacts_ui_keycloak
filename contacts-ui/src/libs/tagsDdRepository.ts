@@ -14,7 +14,7 @@ function toTag(row: TagsRow): Tags{
 // All available teams for the dropdown
 export async function getAllTags(): Promise<Tags[]> {
   const rows = await notesQuery<TagsRow>(
-    `SELECT id, tag FROM tags ORDER BY tags ASC`
+    `SELECT id, tag FROM tags WHERE active = true ORDER BY tag ASC`
   );
   return rows.map(toTag);
 }
