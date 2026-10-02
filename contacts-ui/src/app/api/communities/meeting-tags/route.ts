@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { tagMeetingWithCommunity } from '@/libs/communitiesRepository';
+import { notifyCommunityGroupOfMeeting } from '@/libs/communityNotify';
+import { notesQuery } from '@/libs/notesDb';
 
 function isValidUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
@@ -54,6 +56,23 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
+// and insert this block (fire-and-forget — the response is not delayed):
+//
+   const [meeting] = await notesQuery<{ meeting_date: Date; title: string | null; contact_id: string }>(
+     `SELECT meeting_date, title, contact_id FROM contact_meetings WHERE meeting_id = $1`,
+    [meetingId]
+   );
+   notifyCommunityGroupOfMeeting({
+    communityId,
+     communityName: tag.communityName,
+     meetingId,
+     meetingTitle: meeting?.title ?? '',
+     meetingDate: meeting ? meeting.meeting_date.toISOString().split('T')[0] : '',
+    taggedBy,
+    contactId: meeting?.contact_id ?? '',
+  });
+//
+
     return NextResponse.json({ data: tag }, { status: 201 });
   } catch (err) {
     console.error('POST community meeting tag error:', err);

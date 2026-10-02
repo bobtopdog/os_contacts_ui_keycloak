@@ -13,6 +13,7 @@ import TeamScoreSummary from '@/components/teamStats/TeamScoreSummary';
 import TeamMemberActivity from '@/components/teamStats/TeamMemberActivity';
 import TeamRecentClientMeetings from './teamStats/TeamRecentClientMeetings';
 import TeamRecentMinisterMeetings from './teamStats/TeamRecentMinisterMeetings';
+import UserSummaryLink from '@/components/UserSummaryLink';
 interface Props {
   teamId: string;
 }
@@ -198,7 +199,8 @@ function MembersTable({ members }: { members: TeamMember[] }) {
                 {sorted.map((member) => (
                   <tr key={member.userTeamId}>
                     <td className="ps-3 fw-medium">
-                      👤 {member.username}
+                      👤 
+                      <UserSummaryLink username={member.username} />
                     </td>
                     <td>
                       {member.isPrimary ? (

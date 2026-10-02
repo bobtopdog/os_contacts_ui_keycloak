@@ -9,16 +9,23 @@ import MyNotes from '@/components/MyNotes';
 import MyMeetings from '@/components/MyMeetings';
 import CommunitiesPanel from '@/components/CommunitiesPanel';
 import MeetingGroupsPanel from '@/components/MeetingGroupsPanel';
+import Link from 'next/link';
+import AboutMeCard from '@/components/AboutMeCard';
+
+
 
 // ---------------------------------------------------------------------------
 // Profile info card — populated from session token
 // ---------------------------------------------------------------------------
 function ProfileCard({ name, username, email, image }: {
+  
   name?: string | null;
   username: string;
   email?: string | null;
   image?: string | null;
 }) {
+  const { data: session, status } = useSession();
+const roles = session?.user?.roles ?? [];
   return (
     <div className="card border-0 shadow-sm mb-4">
       <div className="card-header bg-primary text-white py-4">
@@ -75,7 +82,17 @@ function ProfileCard({ name, username, email, image }: {
             </div>
           </div>
         )}
-
+        {
+      roles.includes('admin') && (
+        <div className="d-flex align-items-start gap-3 py-2 border-bottom">
+            <span style={{ width: '1.5rem', textAlign: 'center' }}>⚙️</span>
+            <div>
+              <div className="small"> <Link href="/admin" className="nav-link">Admin</Link></div>
+              <div className="fw-medium">Dropdown admin</div>
+            </div>
+          </div>
+       )}
+       <AboutMeCard username={username} />
       </div>
     </div>
   );

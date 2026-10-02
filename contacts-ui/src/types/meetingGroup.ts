@@ -13,6 +13,7 @@ export interface MeetingGroup {
 
 export interface MeetingGroupMember {
   groupMemberId: string;
+  memberId: string
   groupId: string;
   username: string;
   role: GroupRole;

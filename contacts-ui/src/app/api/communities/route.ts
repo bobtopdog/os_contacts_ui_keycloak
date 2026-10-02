@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserCommunities, createCommunity } from '@/libs/communitiesRepository';
+//import { getUserCommunities } from '@/libs/communitiesRepository';
+import { createCommunityWithGroup } from '@/libs/communityPagesRepository';
 
 /**
  * GET /api/communities?username=xxx
@@ -58,7 +60,8 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const community = await createCommunity(name.trim(), description.trim(), username.trim());
+    //const community = await createCommunity(name.trim(), description.trim(), username.trim());
+    const community = await createCommunityWithGroup(name.trim(), description.trim(), username.trim());
     return NextResponse.json({ data: community }, { status: 201 });
   } catch (err) {
     console.error('POST /api/communities error:', err);

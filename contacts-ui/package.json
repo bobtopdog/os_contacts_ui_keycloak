@@ -15,6 +15,9 @@
     "db:migrate:community-meeting-tags": "node scripts/migrate-community-meeting-tags.cjs",
     "db:migrate:migrate-meeting-title": "node scripts/migrate-meeting-title.cjs",
     "db:migrate:document-category": "node scripts/migrate-document-category.cjs",
+    "db:migrate:community-pages": "node scripts/migrate-community-pages.cjs",
+    "db:migrate:user-profiles": "node scripts/migrate-user-profiles.cjs",
+    "db:migrate:admin-lookup": "node scripts/migrate-admin-lookup.cjs",
     "dev:clean": "rm -rf .next/dev/cache .turbo && next dev"
   },
   "dependencies": {

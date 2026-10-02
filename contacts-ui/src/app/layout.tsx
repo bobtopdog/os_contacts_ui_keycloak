@@ -1,6 +1,7 @@
 'use client'
 import React from 'react';
 
+
   import { 
     IcClassificationBanner,
     IcFooter,
@@ -62,7 +63,7 @@ const alignment: IcAlignment = "center";
        
         <IcTopNavigation
           appTitle="OPUS STORM"
-          status="Phase 3.1"
+          status="Phase 3b"
           version=""
           contentAligned={alignment}
         >
@@ -101,11 +102,10 @@ const alignment: IcAlignment = "center";
           <IcNavigationItem slot="navigation" label="Tag search" href="#collapseTag" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapseTag"/>
           <IcNavigationItem slot="navigation" label="My contacts" href="/mycontacts" title="My contacts" />
           <IcNavigationItem slot="navigation" label="Teams" href="#collapseExample" data-bs-toggle="collapse" aria-expanded="false" aria-controls="collapseExample"/>
+          <IcNavigationItem slot="navigation" label="Communities" href="/communities" title="Communities" />
           <IcNavigationItem slot="navigation" label="Help" href="/help" title="Help" />
           <IcNavigationItem slot="navigation" label="Network" href="/network" title="Network" />
           
-          <IcNavigationItem slot="navigation" label="Admin" href="/admin" title="Admin" />
-
         </IcTopNavigation>
             
         
