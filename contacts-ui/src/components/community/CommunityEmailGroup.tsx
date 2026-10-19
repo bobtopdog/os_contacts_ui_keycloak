@@ -48,12 +48,12 @@ export default function CommunityEmailGroup({ groupId, groupName, username, comm
         {me && <a className="btn btn-outline-secondary btn-sm py-0" href={csvUrl}>⬇️ CSV</a>}
       </div>
       <div className="card-body py-2">
-        <p className="text-muted small mb-2">Members are emailed whenever a meeting is tagged with this community.</p>
+        <p className="text-muted small mb-2">Members are emailed whenever a meeting is tagged with this community. Please use the person's 'Q' reference when adding them and not their name.</p>
         {isAdmin && (
           <div className="d-flex gap-2 mb-2">
             <UsernameAutocomplete value={newMember} onChange={setNewMember} placeholder="Add to email group…" disabled={busy} />
             <button className="btn btn-outline-primary btn-sm"
-              onClick={() => run(async () => { await addMeetingGroupMember(groupId, username, newMember.trim()); setNewMember(''); })}
+              onClick={() => run(async () => { await addMeetingGroupMember(groupId, username, newMember.trim(),'viewer'); setNewMember(''); })}
               disabled={!newMember.trim() || busy}>Add</button>
           </div>
         )}

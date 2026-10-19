@@ -11,9 +11,12 @@ import type { ContactMeeting, MeetingLink } from '@/types/contact';
 import MeetingGroupTagger from '@/components/MeetingGroupTagger';
 import MeetingTagSelectors from '@/components/MeetingTagSelectors';
 import { tagMeetingWithCommunity } from '@/libs/communitiesApi';
-import { tagMeetingWithGroup } from '@/libs/meetingGroupsApi';
+//import { tagMeetingWithGroup } from '@/libs/meetingGroupsApi';
 import MeetingCommunityTags from '@/components/MeetingCommunityTags';
-
+import OutcomeSelector from '@/components/OutcomeSelector';
+import OutcomeBadge from '@/components/OutcomeBadge';
+import { MeetingAssessmentEditor, MeetingAssessmentSummary } from '@/components/MeetingAssessment';
+import { EMPTY_ASSESSMENT, type MeetingAssessment } from '@/types/meetingAssessment';
 
 interface Props { contactId: string; }
 
@@ -22,7 +25,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_OPENTEXT_BASE_URL ?? '';
 const SCORE_LABELS = ['Relevance', 'Actionability', 'Risk', 'Meeting Score'] as const;
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-GB', {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString('en-GB', {
     day: '2-digit', month: 'short', year: 'numeric',
   });
 }
@@ -153,14 +157,20 @@ interface MeetingFormState {
   title: string;
   notes: string;
   scores: [number, number, number, number];
+  outcomeId: number | null;
+  subOutcomeId: number | null;
+  assessment: MeetingAssessment;
 }
 
 function emptyForm(): MeetingFormState {
   return {
-    meetingDate: new Date().toISOString().split('T')[0],
+    meetingDate: new Date().toLocaleDateString('en-CA'),
     title: '',
     notes: '',
     scores: [0, 0, 0, 0],
+    outcomeId: null,
+    subOutcomeId: null,
+    assessment: EMPTY_ASSESSMENT,
   };
 }
 
@@ -170,6 +180,9 @@ function formFromMeeting(m: ContactMeeting): MeetingFormState {
     title: m.title,
     notes: m.notes,
     scores: [m.score1, m.score2, m.score3, m.score4],
+    outcomeId: m.outcomeId,
+    subOutcomeId: m.subOutcomeId,
+    assessment: m.assessment ?? EMPTY_ASSESSMENT,
   };
 }
 
@@ -193,7 +206,6 @@ function MeetingCard({
   const [newRef, setNewRef] = useState('');
   const [isAddingLink, setIsAddingLink] = useState(false);
   const [error, setError] = useState('');
-  const [editTitle, setEditTitle] = useState(meeting.title);
 
   async function handleSaveEdit() {
     setIsSaving(true);
@@ -208,6 +220,9 @@ function MeetingCard({
         score2: form.scores[1],
         score3: form.scores[2],
         score4: form.scores[3],
+        outcomeId: form.outcomeId,
+        subOutcomeId: form.subOutcomeId,
+        assessment: form.assessment,
       });
       setIsEditing(false);
       onRefresh();
@@ -295,9 +310,12 @@ function MeetingCard({
             {meeting.notes && (
               <p className="mb-2 small" style={{ whiteSpace: 'pre-wrap' }}>{meeting.notes}</p>
             )}
+            <p><OutcomeBadge outcomeId={meeting.outcomeId} subOutcomeId={meeting.subOutcomeId} /></p>
 
-            {/* Scores */}
+            {/* Scores 
             <ScoresGrid scores={[meeting.score1, meeting.score2, meeting.score3, meeting.score4]} />
+            */}
+            <MeetingAssessmentSummary value={meeting.assessment ?? EMPTY_ASSESSMENT} />
 
             {/* Document links */}
             <div className="mt-3">
@@ -389,11 +407,29 @@ function MeetingCard({
                 disabled={isSaving}
               />
             </div>
+            <div className="mb-2">
+              <OutcomeSelector
+                value={{ outcomeId: form.outcomeId, subOutcomeId: form.subOutcomeId }}
+                onChange={(o) => setForm({ ...form, ...o })}
+                disabled={isSaving}
+              />
+            </div>
+            {/* ---- Edit mode 
             <div className="mb-3">
               <label className="form-label small fw-medium mb-1">Scores</label>
               <ScoresEditor
                 scores={form.scores}
                 onChange={(scores) => setForm({ ...form, scores })}
+              />
+            </div>
+            ---- */}
+
+            <div className="mb-3">
+              <label className="form-label small fw-medium mb-1">Meeting assessment</label>
+              <MeetingAssessmentEditor
+                value={form.assessment}
+                onChange={(assessment) => setForm({ ...form, assessment })}
+                disabled={isSaving}
               />
             </div>
             {error && <div className="alert alert-danger py-1 small mb-2">{error}</div>}
@@ -450,8 +486,6 @@ function AddMeetingForm({
   const [error, setError] = useState('');
   const [open, setOpen] = useState(false);
   const [communityId, setCommunityId] = useState('');
-  const [groupId, setGroupId] = useState('');
-  const [title, setTitle] = useState('');
 
   async function handleSave() {
     setIsSaving(true);
@@ -464,6 +498,8 @@ function AddMeetingForm({
         notes: form.notes,
         score1: form.scores[0], score2: form.scores[1],
         score3: form.scores[2], score4: form.scores[3],
+        outcomeId: form.outcomeId, subOutcomeId: form.subOutcomeId,
+        assessment: form.assessment,
       });
       // Optional tags — failures shouldn't block the meeting save
       const tagJobs: Promise<unknown>[] = [];
@@ -472,15 +508,9 @@ function AddMeetingForm({
           meetingId: meeting.meetingId, communityId, taggedBy: username,
         }));
       }
-      if (groupId) {
-        tagJobs.push(tagMeetingWithGroup({
-          meetingId: meeting.meetingId, groupId, taggedBy: username,
-        }));
-      }
       await Promise.allSettled(tagJobs);
 
       setCommunityId('');
-      setGroupId('');
 
       setForm(emptyForm());
       setOpen(false);
@@ -543,22 +573,38 @@ function AddMeetingForm({
             disabled={isSaving}
           />
         </div>
-
+        <div className="mb-2">
+          <OutcomeSelector
+            value={{ outcomeId: form.outcomeId, subOutcomeId: form.subOutcomeId }}
+            onChange={(o) => setForm({ ...form, ...o })}
+            disabled={isSaving}
+          />
+        </div>
 
         <MeetingTagSelectors
           contactId={contactId}
           selectedCommunityId={communityId}
-          selectedGroupId={groupId}
+          //selectedGroupId={groupId}
           onCommunityChange={setCommunityId}
-          onGroupChange={setGroupId}
+          //onGroupChange={setGroupId}
           disabled={isSaving}
         />
-
+{/* ----  
         <div className="mb-3">
           <label className="form-label small fw-medium mb-1">Scores</label>
           <ScoresEditor
             scores={form.scores}
             onChange={(scores) => setForm({ ...form, scores })}
+          />
+        </div>
+        ---- */}
+
+        <div className="mb-3">
+          <label className="form-label small fw-medium mb-1">Meeting assessment</label>
+          <MeetingAssessmentEditor
+            value={form.assessment}
+            onChange={(assessment) => setForm({ ...form, assessment })}
+            disabled={isSaving}
           />
         </div>
 

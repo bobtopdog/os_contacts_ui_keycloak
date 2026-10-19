@@ -7,6 +7,8 @@ interface AnexNoteRow {
   username: string;
   comment: string;
   created_at: Date;
+  outcome_id: number | null;
+  sub_outcome_id: number | null;
 }
 
 function toNote(row: AnexNoteRow): ContactAnexNote {
@@ -16,13 +18,15 @@ function toNote(row: AnexNoteRow): ContactAnexNote {
     username: row.username,
     comment: row.comment,
     createdAt: row.created_at.toISOString(),
+    outcomeId: row.outcome_id,
+    subOutcomeId: row.sub_outcome_id,
   };
 }
 
 // Fetch all notes for a contact, newest first
 export async function getNotesByContactId(contactId: string): Promise<ContactAnexNote[]> {
   const rows = await notesQuery<AnexNoteRow>(
-    `SELECT note_id, contact_id, username, comment, created_at
+    `SELECT note_id, contact_id, username, comment, created_at, outcome_id, sub_outcome_id
      FROM contact_anex_notes
      WHERE contact_id = $1
      ORDER BY created_at DESC`,
@@ -35,13 +39,15 @@ export async function getNotesByContactId(contactId: string): Promise<ContactAne
 export async function createNote(
   contactId: string,
   username: string,
-  comment: string
+  comment: string,
+  outcomeId: number | null,
+  subOutcomeId: number | null
 ): Promise<ContactAnexNote> {
   const rows = await notesQuery<AnexNoteRow>(
-    `INSERT INTO contact_anex_notes (contact_id, username, comment)
-     VALUES ($1, $2, $3)
-     RETURNING note_id, contact_id, username, comment, created_at`,
-    [contactId, username, comment]
+    `INSERT INTO contact_anex_notes (contact_id, username, comment, outcome_id, sub_outcome_id)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING note_id, contact_id, username, comment, created_at, outcome_id, sub_outcome_id`,
+    [contactId, username, comment, outcomeId, subOutcomeId]
   );
   return toNote(rows[0]);
 }
@@ -50,14 +56,16 @@ export async function createNote(
 export async function updateNote(
   noteId: string,
   username: string,
-  comment: string
+  comment: string,
+  outcomeId: number | null,
+  subOutcomeId: number | null
 ): Promise<ContactAnexNote | null> {
   const rows = await notesQuery<AnexNoteRow>(
     `UPDATE contact_anex_notes
-     SET comment = $1
-     WHERE note_id = $2 AND username = $3
-     RETURNING note_id, contact_id, username, comment, created_at`,
-    [comment, noteId, username]
+     SET comment = $1, outcome_id = $2, sub_outcome_id = $3
+     WHERE note_id = $4 AND username = $5
+     RETURNING note_id, contact_id, username, comment, created_at, outcome_id, sub_outcome_id`,
+    [comment, outcomeId, subOutcomeId, noteId, username]
   );
   return rows.length ? toNote(rows[0]) : null;
 }

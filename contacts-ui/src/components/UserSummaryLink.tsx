@@ -54,7 +54,7 @@ function UserSummaryModal({ username, onClose }: { username: string; onClose: ()
           <div className="modal-content border-0 shadow">
 
             {/* Header — real name, with the username beneath for disambiguation */}
-            <div className="modal-header bg-primary text-white align-items-start">
+            <div className="modal-header bg-secondary text-white align-items-start">
               <div>
                 <h5 className="modal-title fw-bold mb-0">👤 {name}</h5>
                 {dir?.found && <small className="opacity-75">@{username}</small>}

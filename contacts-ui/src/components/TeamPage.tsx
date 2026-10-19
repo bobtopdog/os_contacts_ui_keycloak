@@ -292,9 +292,11 @@ export default function TeamPage({ teamId }: Props) {
       <div className="col-6 col-md-3">
         <TeamStatMinisterMeetings teamId={teamId} />
       </div>
+{/*
       <div className="col-12 col-md-6">
         <TeamScoreSummary teamId={teamId} />
       </div>
+*/}
     </div>
 
     <div className="row g-3 mb-4">

@@ -55,7 +55,7 @@ export default async function MembersPage({
     if (name)          qp.set("name", name);
     if (department_id) qp.set("department_id", String(department_id));
     qp.set("page", String(p));
-    return `/?${qp.toString()}`;
+    return `/ministers/?${qp.toString()}`;
   }
   const session = await getServerSession(authOptions);
 

@@ -1,3 +1,4 @@
+import { toDateOnly } from './dateOnly';
 import { notesQuery } from './notesDb';
 import type { MinisterMeeting } from '@/types/minister';
 
@@ -17,7 +18,8 @@ function toMeeting(row: MeetingRow): MinisterMeeting {
     meetingId: row.meeting_id,
     ministerId: row.minister_id,
     username: row.username,
-    meetingDate: row.meeting_date.toISOString().split('T')[0], // YYYY-MM-DD
+    //meetingDate: row.meeting_date.toISOString().split('T')[0], // YYYY-MM-DD
+    meetingDate: toDateOnly(row.meeting_date),
     title: row.title,
     comments: row.comments,
     createdAt: row.created_at.toISOString(),

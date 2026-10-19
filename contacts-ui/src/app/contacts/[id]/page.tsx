@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getContact } from '@/libs/api';
 import { notFound } from 'next/navigation';
 import ContactNotes from '@/components/ContactNotes';
@@ -46,10 +48,11 @@ function initials(name: string): string {
 
 export default async function ContactDetailPage({ params }: Props) {
   const { id } = await params;
+  const session = await getServerSession(authOptions);
 
   let contact;
   try {
-    contact = await getContact(id);
+    contact = await getContact(id, session?.accessToken);
   } catch (err) {
     if (err instanceof Error && err.message === 'Contact not found') notFound();
     throw err;

@@ -75,7 +75,7 @@ export async function deletePoc(
 ): Promise<boolean> {
   const rows = await notesQuery<{ note_id: string }>(
     `DELETE FROM contact_poc
-     WHERE pocid = $1 AND username = $2
+     WHERE poc_id = $1 AND username = $2
      RETURNING poc_id`,
     [pocId, username]
   );

@@ -18,7 +18,7 @@ export default function ContactAnex({ contactId }: Props) {
     <div className="row g-3 align-items-left">
         <div className="col-auto">
           <button type="button" className="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#discoveryModal">
-          <Icon path={mdiLinkBoxVariantOutline} size={1} /> Discovery</button>
+          <Icon path={mdiLinkBoxVariantOutline} size={1} /> Discover</button>
           </div>
         <div className="col-auto">
           <button type="button" className="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#uploadModal">
@@ -38,7 +38,7 @@ export default function ContactAnex({ contactId }: Props) {
   <div className="modal-dialog modal-lg  modal-dialog-scrollable">
     <div className="modal-content">
       <div className="modal-header">
-        <h5 className="modal-title" id="discoveryModalLabel">Discovery Links</h5>
+        <h5 className="modal-title" id="discoveryModalLabel">Discover Links</h5>
         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div className="modal-body">

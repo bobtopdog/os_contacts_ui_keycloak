@@ -1,22 +1,28 @@
 'use client';
 
+
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import AdminLookupSection from '@/components/admin/AdminLookupSection';
 import type { LookupKind } from '@/types/adminLookup';
+import OutcomesAdminSection from '@/components/admin/OutcomesAdminSection';
+
+type AdminTab = LookupKind | 'outcomes';
 
 const ADMIN_ROLE = 'admin';   // keep in sync with src/libs/adminAuth.ts
 
-const TABS: { kind: LookupKind; label: string; nameLabel: string; showUrl?: boolean }[] = [
+const TABS: { kind: AdminTab; label: string; nameLabel: string; showUrl?: boolean }[] = [
   { kind: 'tags',  label: '🏷️ Tags',  nameLabel: 'Tag' },
-  { kind: 'areas', label: '🗺️ Areas', nameLabel: 'Area' },
+  { kind: 'areas', label: '🗺️ Understanding', nameLabel: 'Understanding' },
   { kind: 'teams', label: '👥 Teams', nameLabel: 'Team name', showUrl: true },
+  { kind: 'outcomes', label: '🎯 Outcomes', nameLabel: 'Outcome' },
 ];
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
-  const [activeTab, setActiveTab] = useState<LookupKind>('tags');
+  //const [activeTab, setActiveTab] = useState<LookupKind>('tags');
+  const [activeTab, setActiveTab] = useState<AdminTab>('tags');
 
   if (status === 'loading') {
     return (
@@ -68,6 +74,9 @@ export default function AdminPage() {
         ))}
       </ul>
 
+      {current.kind === 'outcomes' ? (
+      <OutcomesAdminSection />
+    ) : (
       <AdminLookupSection
         key={current.kind}
         kind={current.kind}
@@ -75,6 +84,7 @@ export default function AdminPage() {
         nameLabel={current.nameLabel}
         showUrl={current.showUrl}
       />
+    )}
     </>
   );
 }

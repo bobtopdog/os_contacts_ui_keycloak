@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updateNote, deleteNote } from '@/libs/anexNotesRepository';
-
+import { parseOutcome, isOutcomeFkError } from '@/libs/outcomeValidation';
 function isValidUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }
@@ -24,7 +24,7 @@ export async function PATCH(
     );
   }
 
-  let body: { username?: string; comment?: string };
+  let body: { username?: string; comment?: string; outcomeId?: number | null; subOutcomeId?: number | null };
   try {
     body = await request.json();
   } catch {
@@ -34,7 +34,7 @@ export async function PATCH(
     );
   }
 
-  const { username, comment } = body;
+  const { username, comment, outcomeId, subOutcomeId } = body;
 
   if (!username?.trim()) {
     return NextResponse.json(
@@ -48,9 +48,13 @@ export async function PATCH(
       { status: 400 }
     );
   }
+  const parsed = parseOutcome(body.outcomeId, body.subOutcomeId);
+    if ('error' in parsed) {
+      return NextResponse.json({ error: 'Bad Request', message: parsed.error }, { status: 400 });
+    }
 
   try {
-    const note = await updateNote(noteId, username.trim(), comment.trim());
+    const note = await updateNote(noteId, username.trim(), comment.trim(), parsed.outcomeId, parsed.subOutcomeId);
 
     if (!note) {
       return NextResponse.json(
@@ -61,6 +65,12 @@ export async function PATCH(
 
     return NextResponse.json({ data: note });
   } catch (err) {
+    if (isOutcomeFkError(err)) {
+      return NextResponse.json(
+        { error: 'Bad Request', message: 'That sub-outcome does not belong to the chosen outcome.' },
+        { status: 400 }
+      );
+    }
     console.error(`PATCH /api/anexnotes/note/${noteId} error:`, err);
     return NextResponse.json(
       { error: 'Internal Server Error', message: 'An unexpected error occurred' },
@@ -70,7 +80,7 @@ export async function PATCH(
 }
 
 /**
- * DELETE /api/notes/note/:noteId
+ * DELETE /api/anexnotes/note/:noteId
  *
  * Body: { username: string }
  * Only succeeds if the note belongs to the given username.

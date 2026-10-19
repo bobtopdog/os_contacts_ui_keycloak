@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'; 
-import { createMeeting } from '@/libs/meetingsRepository'; 
+import { createMeeting } from '@/libs/meetingsRepository';
+import { parseOutcome, isOutcomeFkError } from '@/libs/outcomeValidation';
+import { parseAssessment } from '@/libs/meetingAssessmentConfig';
 
 function isValidUuid(value: string): boolean { 
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value); 
@@ -12,7 +14,7 @@ function clampScore(value: unknown): number {
 
 /** 
  * POST /api/meetings 
- * Body: { contactId, username, meetingDate, title, notes, score1, score2, score3, score4 } 
+ * Body: { contactId, username, meetingDate, title, notes, score1, score2, score3, score4, outcomeId, subOutcomeId  } 
  */ 
 
 export async function POST(request: NextRequest) { 
@@ -26,7 +28,8 @@ export async function POST(request: NextRequest) {
       { status: 400 } 
     ); 
   } 
-  const { contactId, username, meetingDate, title, notes, score1, score2, score3, score4 } = body; 
+  const { contactId, username, meetingDate, title, notes, score1, score2, score3, score4, outcomeId, subOutcomeId } = body;
+
   if (!contactId || !isValidUuid(String(contactId))) { 
 
     return NextResponse.json( 
@@ -55,6 +58,15 @@ if (!title) {
       { status: 400 } 
     ); 
   } 
+  const parsed = parseOutcome(outcomeId, subOutcomeId);
+  if ('error' in parsed) {
+    return NextResponse.json({ error: 'Bad Request', message: parsed.error }, { status: 400 });
+  }
+  const assessment = parseAssessment(body.assessment);
+  if ('error' in assessment) {
+    return NextResponse.json({ error: 'Bad Request', message: assessment.error }, { status: 400 });
+  }
+
   try { 
     const meeting = await createMeeting( 
       String(contactId), 
@@ -65,12 +77,21 @@ if (!title) {
       clampScore(score1), 
       clampScore(score2), 
       clampScore(score3), 
-      clampScore(score4) 
+      clampScore(score4),
+      parsed.outcomeId,
+      parsed.subOutcomeId,
+      assessment
     ); 
 
     return NextResponse.json({ data: meeting }, { status: 201 }); 
 
   } catch (err) { 
+    if (isOutcomeFkError(err)) {
+      return NextResponse.json(
+        { error: 'Bad Request', message: 'That sub-outcome does not belong to the chosen outcome.' },
+        { status: 400 }
+      );
+    }
     console.error('POST /api/meetings error:', err); 
     return NextResponse.json( 
       { error: 'Internal Server Error', message: 'An unexpected error occurred' }, 

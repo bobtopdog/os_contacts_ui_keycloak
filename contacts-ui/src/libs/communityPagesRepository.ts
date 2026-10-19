@@ -1,3 +1,4 @@
+import { toDateOnly } from './dateOnly';
 import { notesQuery } from './notesDb';
 import type {
   CommunityCardData, CommunityDetail, CommunityPoc,
@@ -269,7 +270,8 @@ export async function getCommunityMeetings(communityId: string): Promise<Communi
   return rows.map((r) => ({
     meetingId: r.meeting_id,
     contactId: r.contact_id,
-    meetingDate: r.meeting_date.toISOString().split('T')[0],
+    //meetingDate: r.meeting_date.toISOString().split('T')[0],
+    meetingDate: toDateOnly(r.meeting_date),
     title: r.title ?? '',
     username: r.username,
   }));

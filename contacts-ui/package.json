@@ -18,7 +18,10 @@
     "db:migrate:community-pages": "node scripts/migrate-community-pages.cjs",
     "db:migrate:user-profiles": "node scripts/migrate-user-profiles.cjs",
     "db:migrate:admin-lookup": "node scripts/migrate-admin-lookup.cjs",
-    "dev:clean": "rm -rf .next/dev/cache .turbo && next dev"
+    "db:migrate:outcomes": "node scripts/migrate-outcomes.cjs",
+    "db:seed:outcomes":    "node scripts/seed-outcomes.cjs",
+    "dev:clean": "rm -rf .next/dev/cache .turbo && next dev",
+    "db:migrate:meeting-assessment": "node scripts/migrate-meeting-assessment.cjs"
   },
   "dependencies": {
     "@mdi/js": "^7.4.47",

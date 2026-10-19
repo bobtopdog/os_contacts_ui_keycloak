@@ -1,3 +1,4 @@
+import { toDateOnly } from './dateOnly';
 import { notesQuery } from './notesDb';
 import type { TeamWeeklyStats, MemberActivity, RecentNote } from '@/types/teamStats';
 
@@ -185,7 +186,8 @@ export async function getTeamWeeklyStats(teamId: string): Promise<TeamWeeklyStat
      meetingId: r.meeting_id,
      contactId: r.contact_id,
      username: r.username,
-     meetingDate: r.meeting_date.toISOString().split('T')[0],
+     //meetingDate: r.meeting_date.toISOString().split('T')[0],
+     meetingDate: toDateOnly(r.meeting_date),
      title: r.title,
    }));
 
@@ -193,7 +195,8 @@ export async function getTeamWeeklyStats(teamId: string): Promise<TeamWeeklyStat
      meetingId: r.meeting_id,
      ministerId: r.minister_id,
      username: r.username,
-     meetingDate: r.meeting_date.toISOString().split('T')[0],
+     //meetingDate: r.meeting_date.toISOString().split('T')[0],
+     meetingDate: toDateOnly(r.meeting_date),
      title: r.title,
    }));
 

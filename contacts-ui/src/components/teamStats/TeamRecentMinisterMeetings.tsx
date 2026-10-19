@@ -11,6 +11,7 @@ function formatDate(iso: string) {
   });
 }
 
+
 /**
  * The 5 most recent minister meetings recorded by team members.
  * Row: date (links to the minister) — title — minister name.

@@ -50,6 +50,7 @@ export default function TeamButtons() {
           </button>
         ))}
       </div>
+      <p className="text-muted small fw-medium mb-2"><br /><a href="mailto:admin@example.com?subject=Request%20New%20Team" className="text-decoration-underline">Request new team</a></p>
     </div>
   );
 }

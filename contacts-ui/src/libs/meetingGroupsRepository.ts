@@ -32,6 +32,7 @@ function toMember(row: MemberRow): MeetingGroupMember {
   return {
     groupMemberId: row.group_member_id,
     groupId: row.group_id,
+    memberId: row.group_member_id, // TODO: remove this field from the type
     username: row.username,
     role: row.role,
     addedAt: row.added_at.toISOString(),

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createDocument } from '@/libs/documentsRepository';
+import { parseOutcome, isOutcomeFkError } from '@/libs/outcomeValidation';
 import {
   MAX_FILE_SIZE_BYTES,
   isAllowedMimeType,
@@ -36,6 +37,8 @@ export async function POST(request: NextRequest) {
   const username = formData.get('username') as string;
   const category = formData.get('category') as string;
   const file = formData.get('file') as File | null;
+  const outcomeId = formData.get('outcomeId') as string | null;
+  const subOutcomeId = formData.get('subOutcomeId') as string | null;
 
   if (!contactId || !isValidUuid(contactId)) {
     return NextResponse.json(
@@ -81,7 +84,10 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
-
+const parsed = parseOutcome(outcomeId, subOutcomeId);
+    if ('error' in parsed) {
+      return NextResponse.json({ error: 'Bad Request', message: parsed.error }, { status: 400 });
+    }
   try {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -93,12 +99,21 @@ export async function POST(request: NextRequest) {
       file.type || 'application/octet-stream',
       file.size,
       category,
-      buffer
+      buffer,
+      parsed.outcomeId,
+      parsed.subOutcomeId
     );
 
     return NextResponse.json({ data: document }, { status: 201 });
   } catch (err) {
+    if (isOutcomeFkError(err)) {
+      return NextResponse.json(
+        { error: 'Bad Request', message: 'That sub-outcome does not belong to the chosen outcome.' },
+        { status: 400 }
+      );
+    }
     console.error('POST /api/documents error:', err);
+
     return NextResponse.json(
       { error: 'Internal Server Error', message: 'An unexpected error occurred' },
       { status: 500 }

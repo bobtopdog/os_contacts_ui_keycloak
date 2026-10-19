@@ -50,6 +50,7 @@ export default function TagButtons() {
           </button>
         ))}
       </div>
+      <p className="text-muted small fw-medium mb-2"><br /><a href="mailto:admin@example.com?subject=Request%20New%20Tag" className="text-decoration-underline">Request new tag</a></p>
     </div>
   );
 }

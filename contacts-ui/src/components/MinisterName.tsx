@@ -12,12 +12,12 @@ import { useQuery } from '@tanstack/react-query';
 const MINISTERS_API = process.env.NEXT_PUBLIC_PARLIAMENT_API_BASE_URL ?? 'http://localhost:3002';
 
 async function fetchMinisterName(ministerId: number): Promise<string> {
-  const res = await fetch(`${MINISTERS_API}/api/members/${ministerId}`, { 
+  const res = await fetch(`${MINISTERS_API}/api/minister-meetings/${ministerId}`, { 
   cache: 'no-store', 
 });
   if (!res.ok) throw new Error(`Failed to fetch minister: ${res.status}`);
   const json = await res.json();
-  console.log(`${MINISTERS_API}/api/members/${ministerId}`);
+  console.log(`${MINISTERS_API}/api/minister-meetings/${ministerId}`);
   return json.data?.name_display_as ?? `Minister #${ministerId}`;
 }
 

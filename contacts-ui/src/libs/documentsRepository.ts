@@ -10,6 +10,8 @@ interface DocumentRow {
   file_size: number;
   category: string;
   created_at: Date;
+  outcome_id: number | null;
+  sub_outcome_id: number | null;
 }
 
 interface DocumentRowWithData extends DocumentRow {
@@ -26,13 +28,15 @@ function toDocument(row: DocumentRow): ContactDocument {
     fileSize: row.file_size,
     category: row.category ?? '',
     createdAt: row.created_at.toISOString(),
+    outcomeId: row.outcome_id,
+    subOutcomeId: row.sub_outcome_id, 
   };
 }
 
 // List all documents for a contact — no file_data to keep it fast
 export async function getDocumentsByContactId(contactId: string): Promise<ContactDocument[]> {
   const rows = await notesQuery<DocumentRow>(
-    `SELECT document_id, contact_id, username, filename, mime_type, file_size, category, created_at
+    `SELECT document_id, contact_id, username, filename, mime_type, file_size, category, created_at, outcome_id, sub_outcome_id
      FROM contact_documents
      WHERE contact_id = $1
      ORDER BY created_at DESC`,
@@ -46,7 +50,7 @@ export async function getDocumentById(
   documentId: string
 ): Promise<{ meta: ContactDocument; data: Buffer } | null> {
   const rows = await notesQuery<DocumentRowWithData>(
-    `SELECT document_id, contact_id, username, filename, mime_type, file_size, category, file_data, created_at
+    `SELECT document_id, contact_id, username, filename, mime_type, file_size, category, file_data, created_at, outcome_id, sub_outcome_id 
      FROM contact_documents
      WHERE document_id = $1`,
     [documentId]
@@ -63,14 +67,17 @@ export async function createDocument(
   mimeType: string,
   fileSize: number,
   category: string,
-  fileData: Buffer
+  fileData: Buffer,
+  outcome_id: number | null,
+  sub_outcome_id: number | null
 ): Promise<ContactDocument> {
   const rows = await notesQuery<DocumentRow>(
     `INSERT INTO contact_documents
-       (contact_id, username, filename, mime_type, file_size, category, file_data)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     RETURNING document_id, contact_id, username, filename, mime_type, file_size, category, created_at`,
-    [contactId, username, filename, mimeType, fileSize, category, fileData]
+       (contact_id, username, filename, mime_type, file_size, category, file_data, outcome_id, sub_outcome_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+     RETURNING document_id, contact_id, username, filename, mime_type, file_size, category, created_at,
+               outcome_id, sub_outcome_id`,
+    [contactId, username, filename, mimeType, fileSize, category, fileData, outcome_id, sub_outcome_id]
   );
   return toDocument(rows[0]);
 }

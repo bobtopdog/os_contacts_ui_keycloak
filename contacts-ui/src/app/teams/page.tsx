@@ -4,6 +4,9 @@ import ContactCard from '@/components/ContactCard';
 import SearchBar from '@/components/SearchBar';
 import Pagination from '@/components/Pagination';
 import TeamButtons from '@/components/TeamButtons';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
 
 interface HomeProps {
   searchParams: Promise<{ q?: string; organisation?: string; page?: string }>;
@@ -14,10 +17,11 @@ export default async function HomePage({ searchParams }: HomeProps) {
   const query = q ?? '';
   const selectedOrg = organisation ?? '';
   const page = Math.max(1, parseInt(pageStr ?? '1', 10) || 1);
+  const session = await getServerSession(authOptions);
 
   let organisations: string[] = [];
   try {
-    organisations = await getOrganisations();
+    organisations = await getOrganisations(session?.user?.accessToken);
   } catch {
     // Non-fatal
   }
@@ -27,7 +31,7 @@ export default async function HomePage({ searchParams }: HomeProps) {
 
   if (query || selectedOrg) {
     try {
-      results = await searchContacts(query, selectedOrg, page);
+      results = await searchContacts(query, selectedOrg, page, 20, session?.user?.accessToken);
     } catch (err) {
       error = err instanceof Error ? err.message : 'Something went wrong';
     }

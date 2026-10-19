@@ -63,7 +63,7 @@ const alignment: IcAlignment = "center";
        
         <IcTopNavigation
           appTitle="OPUS STORM"
-          status="Phase 3b"
+          status="Phase 3b.1"
           version=""
           contentAligned={alignment}
         >

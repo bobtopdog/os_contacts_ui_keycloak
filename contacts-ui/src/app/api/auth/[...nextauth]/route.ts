@@ -25,6 +25,7 @@ callbacks: {
         token.roles = realmAccess?.roles
           ?? (p.roles as string[] | undefined)
           ?? ['placeholder-role-viewer', 'admin'];
+        token.accessToken = account.access_token as string | undefined;
 
           
       } 
@@ -38,6 +39,7 @@ async session({ session, token }) {
         
         username: token.username as string, 
         roles: token.roles as string[],
+        accessToken: token.accessToken as string | undefined,
       }; 
       return session; 
     }, 
@@ -58,6 +60,12 @@ export const authOptions: AuthOptions = {
       clientId: process.env.KEYCLOAK_CLIENT_ID!,
       clientSecret: process.env.KEYCLOAK_CLIENT_SECRET!,
       issuer: process.env.KEYCLOAK_ISSUER!,
+      authorization: {
+        params: {
+          access_type: 'offline',
+          scope: 'openid profile email',
+          },
+        },
     }),
   ],
 
@@ -76,6 +84,44 @@ export const authOptions: AuthOptions = {
           ?? profile.email
           ?? token.email
           ?? 'unknown';
+
+        token.rawClaims = profile as Record<string, unknown>; //Store all. raw claims
+
+        token.accessToken = account.access_token; // Stores the access token for API calls
+
+        token.refreshToken = account.refresh_token; //Stores refresh token for later use
+
+        token.accessTokenExpires = Date.now() + (Number(account.expires_in)*1000);
+
+      if (Date.now() < (token.accessTokenExpires as number)) {
+      return token;
+      }
+
+      if (!token.refreshToken) {
+        return { ...token, error: 'RefreshTokenMissing'};
+      }
+
+      try {
+        const url = `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`;
+          const response = await fetch(url, {
+            method: 'post',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            body: new URLSearchPArams({
+              client_id process.env.KEYCLOAK_CLIENT_ID!,
+              client_secret: process.env.KEYCLOAK_CLIENT_SECRET!,
+              grant_type: 'refresh_token'
+              refresh_token: token.refreshToken as string,
+            }),
+          });
+        const refreshedTokens = await response.json();
+
+        if (!response.ok){
+          throw refreshedTokens;
+        }
+        
+
+      }
+
       }
       return token;
     },

@@ -21,7 +21,7 @@ export default async function HomePage({ searchParams }: HomeProps) {
   // Load organisations for the dropdown (once, on every page render)
   let organisations: string[] = [];
   try {
-    organisations = await getOrganisations();
+    organisations = await getOrganisations(session?.accessToken);
   } catch {
     // Non-fatal — dropdown will just be empty
   }
@@ -32,7 +32,7 @@ export default async function HomePage({ searchParams }: HomeProps) {
   // Search if there's a query OR an organisation filter active {session?.user.name}
   if (query || selectedOrg) {
     try {
-      results = await searchContacts(query, selectedOrg, page);
+      results = await searchContacts(query, selectedOrg, page, 20, session?.accessToken);
     } catch (err) {
       error = err instanceof Error ? err.message : 'Something went wrong';
     }

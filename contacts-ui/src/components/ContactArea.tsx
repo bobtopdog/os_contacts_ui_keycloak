@@ -147,7 +147,7 @@ export default function ContactAreas({ contactId }: Props) {
     <div >
       <div className={`card border-1 mb-1 `}>
         <div className="card-header text-muted small">
-          <div>Areas&nbsp;
+          <div>Understanding&nbsp;
             <button type="button" className="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#areaModal">
               +
             </button>
@@ -170,7 +170,7 @@ export default function ContactAreas({ contactId }: Props) {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="areaModalLabel">Areas</h5>
+              <h5 className="modal-title" id="areaModalLabel">Understanding</h5>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
@@ -181,7 +181,7 @@ export default function ContactAreas({ contactId }: Props) {
                     <div className="row g-3 align-items-left">
                       <div className="col-auto">
                         <label htmlFor="areaName" className="fcol-form-label ">
-                          Add an area
+                          Add 
                         </label>
                       </div>
                       <div className="col-auto">
@@ -216,7 +216,7 @@ export default function ContactAreas({ contactId }: Props) {
                               Saving…
                             </>
                           ) : (
-                            'Save area'
+                            'Save'
                           )}
                         </button>
                       </div>
@@ -241,15 +241,15 @@ export default function ContactAreas({ contactId }: Props) {
                 </div>
               ) : (
                 <div className="alert alert-info py-2 small mb-4">
-                  Please sign in to add areas.
+                  Please sign in to add understanding.
                 </div>
               )}
 
-              {/* Areas history */}
+              {/* Understanding history */}
               {isLoading && (
                 <div className="text-center text-muted py-3">
                   <span className="spinner-border spinner-border-sm me-2" />
-                  Loading areas…
+                  Loading understanding…
                 </div>
               )}
             </div>
@@ -263,12 +263,12 @@ export default function ContactAreas({ contactId }: Props) {
 
       {isError && (
         <div className="alert alert-warning py-2 small">
-          Could not load areas. Please try refreshing.
+          Could not load understanding. Please try refreshing.
         </div>
       )}
 
       {areas && areas.length === 0 && (
-        <p className="text-muted small">No area yet for this contact.</p>
+        <p className="text-muted small">No understanding yet for this contact.</p>
       )}
 
 

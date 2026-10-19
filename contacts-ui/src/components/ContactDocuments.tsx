@@ -14,7 +14,9 @@ import {
   fileIcon,
 } from '@/libs/documentConfig';
 import type { ContactDocument } from '@/types/contact';
-
+import OutcomeSelector from '@/components/OutcomeSelector';
+import OutcomeBadge from '@/components/OutcomeBadge';
+import { EMPTY_OUTCOME, type OutcomeValue } from '@/types/outcome';
 interface Props { contactId: string; }
 
 function formatDate(iso: string) {
@@ -72,6 +74,11 @@ function DocumentRow({
                     {doc.category && (
                       <span className="badge bg-info text-dark rounded-pill me-1">
                         {doc.category}
+                      </span>
+                    )}
+                    {doc.outcomeId && (
+                      <span className="me-1">
+                        <OutcomeBadge outcomeId={doc.outcomeId} subOutcomeId={doc.subOutcomeId} />
                       </span>
                     )}
                     {formatFileSize(doc.fileSize)} &middot; 👤 <strong>{doc.username}</strong>
@@ -149,6 +156,7 @@ export default function ContactDocuments({ contactId }: Props) {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [outcome, setOutcome] = useState<OutcomeValue>(EMPTY_OUTCOME);
 
   const { data: documents, isLoading, isError } = useQuery<ContactDocument[]>({
     queryKey: ['documents', contactId],
@@ -182,9 +190,10 @@ export default function ContactDocuments({ contactId }: Props) {
     setUploadError('');
 
     try {
-      await uploadDocument(contactId, username, category, selectedFile, setUploadProgress);
+      await uploadDocument(contactId, username, category, selectedFile, outcome, setUploadProgress);
       setSelectedFile(null);
       setCategory('');
+      setOutcome(EMPTY_OUTCOME);
       setUploadProgress(0);
       if (fileInputRef.current) fileInputRef.current.value = '';
       queryClient.invalidateQueries({ queryKey: ['documents', contactId] });
@@ -239,6 +248,10 @@ export default function ContactDocuments({ contactId }: Props) {
             <small className="text-muted d-block mb-2">
               Accepted: PDF, Word, Excel, MSG, EML &middot; Max 2MB &middot; Category is required
             </small>
+
+            <div className="mb-2">
+              <OutcomeSelector value={outcome} onChange={setOutcome} disabled={isUploading} />
+            </div>
 
             {/* Selected file preview */}
             {selectedFile && !uploadError && (

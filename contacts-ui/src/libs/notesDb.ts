@@ -14,10 +14,10 @@ export function getNotesPool(): Pool {
             idleTimeoutMillis: 60000,
             connectionTimeoutMillis: 60000,
             allowExitOnIdle: false,
-            ssl:
-              process.env.NODE_ENV === 'production'
+            ssl: false,
+              /* process.env.NODE_ENV === 'production'
                 ? { rejectUnauthorized: false }
-                : false,
+                : false, */
           }
         : {
             //connectionString: process.env.NOTES_DATABASE_URL,
@@ -33,10 +33,10 @@ export function getNotesPool(): Pool {
             connectionTimeoutMillis: 60000,
             allowExitOnIdle: false,
             
-            ssl:
-              process.env.NODE_ENV === 'production'
+            ssl: false,
+              /* process.env.NODE_ENV === 'production'
                 ? { rejectUnauthorized: false }
-                : false, 
+                : false,  */
           },
         
     );

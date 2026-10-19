@@ -3,15 +3,19 @@ import type { ContactDetail, ContactNote, ContactPoc,  ContactSummary,
   ContactDocument, ContactAnexNote, Team, UserTeam, TeamDetail, TeamMember, 
   ContactHighlights, ContactArea, ContactHighlightNote} from '@/types/contact';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001';
+import type { OutcomeValue } from '@/types/outcome';
+import type { MeetingAssessment } from '@/types/meetingAssessment';
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
 // Notes are served by this Next.js app's own API routes (direct notes DB connection)
-const NOTES_API = process.env.NEXT_PUBLIC_NOTES_API_URL ?? 'http://localhost:3000';
+const NOTES_API = process.env.NEXT_PUBLIC_NOTES_API_URL ?? '';
 
 export async function searchContacts(
   query: string,
   organisation = '',
   page = 1,
-  limit = 20
+  limit = 20,
+  accessToken?: string
 ): Promise<PaginatedResponse<ContactSummary>> {
   const params = new URLSearchParams();
   if (query) params.set('q', query);
@@ -21,15 +25,17 @@ export async function searchContacts(
 
   const res = await fetch(`${API_BASE}/api/contacts?${params.toString()}`, {
     cache: 'no-store',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}`, } : undefined,
   });
 
   if (!res.ok) throw new Error(`Search failed: ${res.status}`);
   return res.json();
 }
 
-export async function getContact(id: string): Promise<ContactDetail> {
+export async function getContact(id: string, accessToken?: string): Promise<ContactDetail> {
   const res = await fetch(`${API_BASE}/api/contacts/${id}`, {
     cache: 'no-store',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}`, } : undefined,
   });
 
   if (res.status === 404) throw new Error('Contact not found');
@@ -39,9 +45,10 @@ export async function getContact(id: string): Promise<ContactDetail> {
   return json.data;
 }
 
-export async function getOrganisations(): Promise<string[]> {
+export async function getOrganisations(accessToken?: string): Promise<string[]> {
   const res = await fetch(`${API_BASE}/api/contacts/organisations`, {
     cache: 'no-store',
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}`, } : undefined,
   });
   if (!res.ok) throw new Error(`Failed to fetch organisations: ${res.status}`);
   const json = await res.json();
@@ -227,22 +234,15 @@ export async function deleteTag(
 // ---- Links ----------------------------------------------------------------
 
 export async function getLinks(contactId: string): Promise<ContactLink[]> {
-  const res = await fetch(`${NOTES_API}/api/links/${contactId}`, {
-    cache: 'no-store',
-  });
-  console.log('NOTES', NOTES_API);
-  console.log('NOTES URL', `${NOTES_API}/api/links/${contactId}`);
+  const res = await fetch(`${NOTES_API}/api/links/${contactId}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Failed to fetch links: ${res.status}`);
-  const json = await res.json();
-  return json.data;
+
+  return (await res.json()).data;
 }
 
-export async function postLink(payload: {
-  contactId: string;
-  username: string;
-  reference: string;
-  label: string;
-}): Promise<ContactLink> {
+export async function postLink(
+  payload: { contactId: string; username: string; reference: string; label: string; } & OutcomeValue
+): Promise<ContactLink> {
   const res = await fetch(`${NOTES_API}/api/links`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -252,33 +252,26 @@ export async function postLink(payload: {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message ?? `Failed to save link: ${res.status}`);
   }
-  const json = await res.json();
-  return json.data;
+  return (await res.json()).data;
 }
 
 export async function patchLink(
   linkId: string,
-  username: string,
-  reference: string,
-  label: string
+  payload: { username: string; reference: string; label: string } & OutcomeValue
 ): Promise<ContactLink> {
   const res = await fetch(`${NOTES_API}/api/links/link/${linkId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, reference, label }),
+    body: JSON.stringify(payload),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.message ?? `Failed to update link: ${res.status}`);
   }
-  const json = await res.json();
-  return json.data;
+  return (await res.json()).data;
 }
 
-export async function deleteLink(
-  linkId: string,
-  username: string
-): Promise<void> {
+export async function deleteLink(linkId: string, username: string): Promise<void> {
   const res = await fetch(`${NOTES_API}/api/links/link/${linkId}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
@@ -312,7 +305,8 @@ export async function getMyMeetings(userName: string): Promise<ContactMeeting[]>
 
 export async function postMeeting(payload: {
   contactId: string; username: string; meetingDate: string; title: string;
-  notes: string; score1: number; score2: number; score3: number; score4: number;
+  notes: string; score1: number; score2: number; score3: number; score4: number; outcomeId: number | null; subOutcomeId: number | null;
+  assessment: MeetingAssessment;
 }): Promise<ContactMeeting> {
   const res = await fetch(`${NOTES_API}/api/meetings`, {
     method: 'POST',
@@ -329,7 +323,8 @@ export async function postMeeting(payload: {
 export async function patchMeeting(
   meetingId: string,
   payload: { username: string; meetingDate: string; title: string; notes: string;
-             score1: number; score2: number; score3: number; score4: number; }
+             score1: number; score2: number; score3: number; score4: number; outcomeId: number | null; subOutcomeId: number | null;
+             assessment: MeetingAssessment; }
 ): Promise<ContactMeeting> {
   const res = await fetch(`${NOTES_API}/api/meetings/meeting/${meetingId}`, {
     method: 'PATCH',
@@ -396,6 +391,7 @@ export async function uploadDocument(
   username: string,
   category: string,
   file: File,
+  outcome: { outcomeId: number | null; subOutcomeId: number | null },
   onProgress?: (pct: number) => void
 ): Promise<ContactDocument> {
   return new Promise((resolve, reject) => {
@@ -404,6 +400,8 @@ export async function uploadDocument(
     formData.append('username', username);
     formData.append('category', category);
     formData.append('file', file);
+    formData.append('outcomeId', outcome.outcomeId?.toString() ?? '');
+    formData.append('subOutcomeId', outcome.subOutcomeId?.toString() ?? '');
 
     const xhr = new XMLHttpRequest();
 
@@ -467,6 +465,8 @@ export async function postAnexNote(payload: {
   contactId: string;
   username: string;
   comment: string;
+  outcomeId: number | null; 
+  subOutcomeId: number | null;
 }): Promise<ContactAnexNote> {
   const res = await fetch(`${NOTES_API}/api/anexnotes`, {
     method: 'POST',
@@ -484,12 +484,14 @@ export async function postAnexNote(payload: {
 export async function patchAnexNote(
   noteId: string,
   username: string,
-  comment: string
+  comment: string,
+  outcomeId: number | null,
+  subOutcomeId: number | null
 ): Promise<ContactAnexNote> {
-  const res = await fetch(`${NOTES_API}/api/anexnote/note/${noteId}`, {
+  const res = await fetch(`${NOTES_API}/api/anexnotes/note/${noteId}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, comment }),
+    body: JSON.stringify({ username, comment, outcomeId, subOutcomeId }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -498,6 +500,7 @@ export async function patchAnexNote(
   const json = await res.json();
   return json.data;
 }
+
 
 export async function deleteAnexNote(
   noteId: string,

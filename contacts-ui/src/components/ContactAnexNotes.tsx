@@ -5,6 +5,10 @@ import { useSession } from 'next-auth/react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAnexNotes, postAnexNote, patchAnexNote, deleteAnexNote } from '@/libs/api';
 import type { ContactAnexNote } from '@/types/contact';
+import OutcomeSelector from '@/components/OutcomeSelector';
+import OutcomeBadge from '@/components/OutcomeBadge';
+import { EMPTY_OUTCOME, type OutcomeValue } from '@/types/outcome';
+
 
 interface Props {
   contactId: string;
@@ -28,7 +32,7 @@ function NoteCard({
 }: {
   note: ContactAnexNote;
   currentUsername: string;
-  onUpdate: (noteId: string, comment: string) => Promise<void>;
+  onUpdate: (noteId: string, comment: string, outcome: OutcomeValue) => Promise<void>;
   onDelete: (noteId: string) => Promise<void>;
 }) {
   const isOwner = note.username === currentUsername;
@@ -39,12 +43,16 @@ function NoteCard({
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState('');
 
+  const [editOutcome, setEditOutcome] = useState<OutcomeValue>({
+      outcomeId: note.outcomeId, subOutcomeId: note.subOutcomeId,
+    });
+
   async function handleSaveEdit() {
     if (!editValue.trim()) return;
     setIsSaving(true);
     setError('');
     try {
-      await onUpdate(note.noteId, editValue.trim());
+      await onUpdate(note.noteId, editValue.trim(), editOutcome);
       setIsEditing(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update note');
@@ -55,6 +63,7 @@ function NoteCard({
 
   function handleCancelEdit() {
     setEditValue(note.comment);
+    setEditOutcome({ outcomeId: note.outcomeId, subOutcomeId: note.subOutcomeId });
     setIsEditing(false);
     setError('');
   }
@@ -79,6 +88,7 @@ function NoteCard({
         {!isEditing && !confirmDelete && (
           <>
             <p className="mb-1" style={{ whiteSpace: 'pre-wrap' }}>{note.comment}</p>
+            <OutcomeBadge outcomeId={note.outcomeId} subOutcomeId={note.subOutcomeId} />
             <div className="d-flex justify-content-between align-items-center mt-1">
               <small className="text-muted">
                 👤 <strong>{note.username}</strong>
@@ -91,7 +101,11 @@ function NoteCard({
                 <div className="d-flex gap-2">
                   <button
                     className="btn btn-outline-secondary btn-sm py-0"
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setEditValue(note.comment);
+                      setEditOutcome({ outcomeId: note.outcomeId, subOutcomeId: note.subOutcomeId });
+                      setIsEditing(true);
+                    }}
                     title="Edit note"
                   >
                     ✏️ Edit
@@ -123,6 +137,9 @@ function NoteCard({
             {error && (
               <div className="alert alert-danger py-1 small mb-2">{error}</div>
             )}
+            <div className="mb-2">
+              <OutcomeSelector value={editOutcome} onChange={setEditOutcome} disabled={isSaving} />
+            </div>
             <div className="d-flex justify-content-end gap-2">
               <button
                 className="btn btn-outline-secondary btn-sm"
@@ -184,8 +201,9 @@ export default function ContactAnexNotes({ contactId }: Props) {
   const queryClient = useQueryClient();
   const [comment, setComment] = useState('');
   const [saveError, setSaveError] = useState('');
-
+  const [isSaving, setIsSaving] = useState(false);
   const username = session?.user?.username ?? '';
+   const [outcome, setOutcome] = useState<OutcomeValue>(EMPTY_OUTCOME);
 
   const { data: anexnotes, isLoading, isError } = useQuery<ContactAnexNote[]>({
     queryKey: ['anexnotes', contactId],
@@ -198,12 +216,13 @@ export default function ContactAnexNotes({ contactId }: Props) {
       setComment('');
       setSaveError('');
       queryClient.invalidateQueries({ queryKey: ['anexnotes', contactId] });
+      setOutcome(EMPTY_OUTCOME);
     },
     onError: (err: Error) => setSaveError(err.message),
   });
-
-  async function handleUpdate(noteId: string, newComment: string) {
-    await patchAnexNote(noteId, username, newComment);
+  
+  async function handleUpdate(noteId: string, newComment: string, editOutcome: OutcomeValue) {
+    await patchAnexNote(noteId, username, newComment, editOutcome.outcomeId, editOutcome.subOutcomeId);
     queryClient.invalidateQueries({ queryKey: ['anexnotes', contactId] });
   }
 
@@ -215,7 +234,7 @@ export default function ContactAnexNotes({ contactId }: Props) {
   function handleSave() {
     if (!comment.trim() || !username) return;
     setSaveError('');
-    addMutation.mutate({ contactId, username, comment: comment.trim() });
+    addMutation.mutate({ contactId, username, comment: comment.trim(), outcomeId: outcome.outcomeId, subOutcomeId: outcome.subOutcomeId });
   }
 
   return (
@@ -235,6 +254,9 @@ export default function ContactAnexNotes({ contactId }: Props) {
               onChange={(e) => setComment(e.target.value)}
               disabled={addMutation.isPending}
             />
+            <div className="mb-2">
+              <OutcomeSelector value={outcome} onChange={setOutcome} disabled={addMutation.isPending} />
+            </div>
             {saveError && (
               <div className="alert alert-danger py-2 small mb-2">{saveError}</div>
             )}

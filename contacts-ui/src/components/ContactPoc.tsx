@@ -188,7 +188,7 @@ export default function ContactPoc({ contactId }: Props) {
           </div>
         </div>
       ) : (
-        <div className="alert alert-info py-2 small mb-4">You are already a point of contact.</div>
+        <div className="alert alert-info py-2 small mb-4">You are a point of contact.</div>
       )}
 
       {isLoading && (

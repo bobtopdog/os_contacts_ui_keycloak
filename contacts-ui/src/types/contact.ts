@@ -13,6 +13,8 @@ export interface ContactDetail extends ContactSummary {
   updatedAt: string;
 }
 
+import type { MeetingAssessment } from './meetingAssessment';
+
 export interface PaginatedResponse<T> {
   data: T[];
   pagination: {
@@ -29,6 +31,7 @@ export interface ContactNote {
   username: string;
   comment: string;
   createdAt: string;
+ 
 }
 
 export interface ContactPoc{
@@ -55,6 +58,8 @@ export interface ContactLink {
   label: string;
   createdAt: string;
   updatedAt: string;
+  outcomeId: number | null;      // ← NEW
+  subOutcomeId: number | null;   // ← NEW
 }
 
 
@@ -79,6 +84,9 @@ export interface ContactMeeting {
   links: MeetingLink[];
   createdAt: string;
   updatedAt: string;
+  outcomeId: number | null;
+  subOutcomeId: number | null;
+  assessment: MeetingAssessment;
 }
 
 export interface MyContactMeeting {
@@ -90,6 +98,8 @@ export interface MyContactMeeting {
   notes: string;
   createdAt: string;
   updatedAt: string;
+  outcomeId: number | null;
+  subOutcomeId: number | null;
 }
 export interface ContactDocument {
   documentId: string;
@@ -100,6 +110,8 @@ export interface ContactDocument {
   fileSize: number;
   category: string;
   createdAt: string;
+  outcomeId: number | null;
+  subOutcomeId: number | null;
 }
 export interface ContactAnexNote {
   noteId: string;
@@ -107,6 +119,8 @@ export interface ContactAnexNote {
   username: string;
   comment: string;
   createdAt: string;
+  outcomeId: number | null;
+  subOutcomeId: number | null;
 }
 
 export interface Team {
