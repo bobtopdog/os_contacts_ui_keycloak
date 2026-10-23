@@ -1,8 +1,8 @@
+import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server';
 import { createLink } from '@/libs/linksRepository';
 import { parseOutcome, isOutcomeFkError } from '@/libs/outcomeValidation';
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * POST /api/links
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
   const reference = body.reference?.trim() ?? '';
   const label = body.label?.trim() ?? '';
 
-  if (!UUID.test(contactId)) {
+  if (!isValidContactId(contactId)) {
     return NextResponse.json(
       { error: 'Bad Request', message: 'A valid contactId is required.' }, { status: 400 });
   }

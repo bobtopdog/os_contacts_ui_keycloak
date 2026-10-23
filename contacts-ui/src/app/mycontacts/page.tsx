@@ -22,7 +22,7 @@ export default async function MyContactsPage() {
   let contacts: ContactDetail[] = [];
   if (contactIds.length > 0) {
     const results = await Promise.allSettled(
-      contactIds.map((id) => getContact(id, session?.user?.accessToken))
+      contactIds.map((id) => getContact(id))
     );
 
     // Only include successfully resolved contacts

@@ -1,7 +1,7 @@
+import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server';
 import { getLinksByContactId } from '@/libs/linksRepository';
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 
 /** GET /api/links/:contactId — all links for a contact, with outcome ids */
@@ -10,7 +10,7 @@ export async function GET(
   { params }: { params: Promise<{ contactId: string }> }
 ) {
   const { contactId } = await params;
-  if (!UUID.test(contactId)) {
+  if (!isValidContactId(contactId)) {
     return NextResponse.json(
       { error: 'Bad Request', message: 'Invalid contact ID.' }, { status: 400 });
   }

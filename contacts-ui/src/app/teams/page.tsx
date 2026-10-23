@@ -4,8 +4,9 @@ import ContactCard from '@/components/ContactCard';
 import SearchBar from '@/components/SearchBar';
 import Pagination from '@/components/Pagination';
 import TeamButtons from '@/components/TeamButtons';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import type {Organisation} from '@/types/contact'
+import {getLiveOrganisations, searchLivePeople} from '@/libs/liveContactsServer'
+
 
 
 interface HomeProps {
@@ -17,21 +18,22 @@ export default async function HomePage({ searchParams }: HomeProps) {
   const query = q ?? '';
   const selectedOrg = organisation ?? '';
   const page = Math.max(1, parseInt(pageStr ?? '1', 10) || 1);
-  const session = await getServerSession(authOptions);
 
-  let organisations: string[] = [];
-  try {
-    organisations = await getOrganisations(session?.user?.accessToken);
-  } catch {
-    // Non-fatal
-  }
+
+  let organisations: Organisation[] = [];
+    try {
+      organisations = await getLiveOrganisations();
+    } catch (err) {
+      // Non-fatal — dropdown will just be empty
+      console.error('Failed to load organisations for the dropdown' ,err);
+    }
 
   let results = null;
   let error = '';
 
   if (query || selectedOrg) {
     try {
-      results = await searchContacts(query, selectedOrg, page, 20, session?.user?.accessToken);
+      results = await searchContacts(query, selectedOrg, page);
     } catch (err) {
       error = err instanceof Error ? err.message : 'Something went wrong';
     }

@@ -1,3 +1,4 @@
+import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server';
 import { createDocument } from '@/libs/documentsRepository';
 import { parseOutcome, isOutcomeFkError } from '@/libs/outcomeValidation';
@@ -10,13 +11,9 @@ import {
 } from '@/libs/documentConfig';
 
 // Disable Next.js default 4MB body limit so we can handle up to 2MB ourselves
-export const config = {
+/* export const config = {
   api: { bodyParser: false },
-};
-
-function isValidUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
+}; */
 
 /**
  * POST /api/documents
@@ -40,7 +37,7 @@ export async function POST(request: NextRequest) {
   const outcomeId = formData.get('outcomeId') as string | null;
   const subOutcomeId = formData.get('subOutcomeId') as string | null;
 
-  if (!contactId || !isValidUuid(contactId)) {
+  if (!contactId || !isValidContactId(contactId)) {
     return NextResponse.json(
       { error: 'Bad Request', message: 'A valid contactId is required.' },
       { status: 400 }

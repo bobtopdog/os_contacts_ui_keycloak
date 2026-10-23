@@ -25,7 +25,7 @@ callbacks: {
         token.roles = realmAccess?.roles
           ?? (p.roles as string[] | undefined)
           ?? ['placeholder-role-viewer', 'admin'];
-        token.accessToken = account.access_token as string | undefined;
+        
 
           
       } 
@@ -39,7 +39,7 @@ async session({ session, token }) {
         
         username: token.username as string, 
         roles: token.roles as string[],
-        accessToken: token.accessToken as string | undefined,
+        
       }; 
       return session; 
     }, 

@@ -1,55 +1,66 @@
 import type { ContactDetail, ContactNote, ContactPoc,  ContactSummary, 
   PaginatedResponse, ContactTag, ContactLink, ContactMeeting, MeetingLink, 
   ContactDocument, ContactAnexNote, Team, UserTeam, TeamDetail, TeamMember, 
-  ContactHighlights, ContactArea, ContactHighlightNote} from '@/types/contact';
+  ContactHighlights, ContactArea, ContactHighlightNote, Organisation} from '@/types/contact';
 
 import type { OutcomeValue } from '@/types/outcome';
 import type { MeetingAssessment } from '@/types/meetingAssessment';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? '';
-// Notes are served by this Next.js app's own API routes (direct notes DB connection)
-const NOTES_API = process.env.NEXT_PUBLIC_NOTES_API_URL ?? '';
+// Contacts now come from the LIVE corporate service, via this app's own
+// /api/contacts proxy routes (they add the user's Keycloak token server-side).
+// Relative URLs → same origin → no CORS, and the token never reaches the browser.
+//
+// These three are for CLIENT components. Server components / route handlers
+// must import from '@/libs/liveContactsServer' instead.
 
+// Notes are served by this Next.js app's own API routes (direct notes DB connection)
+const NOTES_API = process.env.NEXT_PUBLIC_NOTES_API_URL ?? 'http://localhost:3000';
+
+function assertBrowser(fn: string) {
+  if (typeof window === 'undefined') {
+    throw new Error(
+      `${fn}() was called on the server. Import from '@/libs/liveContactsServer' in server code.`);
+  }
+}
+
+/**
+ * People search. The live service returns at most 20 results; when
+ * `pagination.total > data.length` show the "refine your search" notice.
+ * (`page`/`limit` kept so existing callers still compile — they're ignored.)
+ */
 export async function searchContacts(
   query: string,
-  organisation = '',
-  page = 1,
-  limit = 20,
-  accessToken?: string
+  organisationId = '',
+  _page = 1,
+  _limit = 20
 ): Promise<PaginatedResponse<ContactSummary>> {
+  assertBrowser('searchContacts');
   const params = new URLSearchParams();
   if (query) params.set('q', query);
-  if (organisation) params.set('organisation', organisation);
-  params.set('page', String(page));
-  params.set('limit', String(limit));
+  if (organisationId) params.set('organisation', organisationId);
 
-  const res = await fetch(`${API_BASE}/api/contacts?${params.toString()}`, {
-    cache: 'no-store',
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}`, } : undefined,
-  });
-
+  const res = await fetch(`/api/contacts?${params.toString()}`, { cache: 'no-store' });
+  if (res.status === 401) throw new Error('Your session has expired — please sign in again.');
   if (!res.ok) throw new Error(`Search failed: ${res.status}`);
   return res.json();
 }
 
-export async function getContact(id: string, accessToken?: string): Promise<ContactDetail> {
-  const res = await fetch(`${API_BASE}/api/contacts/${id}`, {
-    cache: 'no-store',
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}`, } : undefined,
-  });
+export async function getContact(id: string): Promise<ContactDetail> {
+  assertBrowser('getContact');
+  const res = await fetch(`/api/contacts/${encodeURIComponent(id)}`, { cache: 'no-store' });
 
   if (res.status === 404) throw new Error('Contact not found');
+  if (res.status === 401) throw new Error('Your session has expired — please sign in again.');
   if (!res.ok) throw new Error(`Failed to fetch contact: ${res.status}`);
 
   const json = await res.json();
   return json.data;
 }
 
-export async function getOrganisations(accessToken?: string): Promise<string[]> {
-  const res = await fetch(`${API_BASE}/api/contacts/organisations`, {
-    cache: 'no-store',
-    headers: accessToken ? { Authorization: `Bearer ${accessToken}`, } : undefined,
-  });
+/** Now returns { id, name } — use id as the <option> value, name as the label. */
+export async function getOrganisations(): Promise<Organisation[]> {
+  assertBrowser('getOrganisations');
+  const res = await fetch('/api/contacts/organisations', { cache: 'no-store' });
   if (!res.ok) throw new Error(`Failed to fetch organisations: ${res.status}`);
   const json = await res.json();
   return json.data;

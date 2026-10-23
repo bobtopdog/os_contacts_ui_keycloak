@@ -9,8 +9,14 @@ export interface ContactSummary {
 }
 
 export interface ContactDetail extends ContactSummary {
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string;   // '' — the live service doesn't provide it
+  updatedAt: string;   // from the live profile's mod_date
+}
+
+/** Organisation filter option. `id` is what the live search expects. */ 
+export interface Organisation {
+  id: string;
+  name: string;
 }
 
 import type { MeetingAssessment } from './meetingAssessment';

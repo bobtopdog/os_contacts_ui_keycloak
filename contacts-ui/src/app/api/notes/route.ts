@@ -1,16 +1,13 @@
+import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server';
 import { createNote } from '@/libs/notesRepository';
-
-function isValidUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
 
 /**
  * POST /api/notes
  *
  * Body (JSON):
  * {
- *   "contactId": "uuid",
+ *   "contactId": "smithD_10",
  *   "username":  "john.doe",
  *   "comment":   "Called to discuss renewal."
  * }
@@ -29,9 +26,9 @@ export async function POST(request: NextRequest) {
 
   const { contactId, username, comment } = body;
 
-  if (!contactId || !isValidUuid(contactId)) {
+  if (!contactId || !isValidContactId(contactId)) {
     return NextResponse.json(
-      { error: 'Bad Request', message: 'A valid contactId (UUID) is required.' },
+      { error: 'Bad Request', message: 'A valid contactId is required.' },
       { status: 400 }
     );
   }

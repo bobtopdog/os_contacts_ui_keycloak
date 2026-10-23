@@ -6,6 +6,8 @@ import Pagination from '@/components/Pagination';
 import { getServerSession } from 'next-auth';
 import { authOptions } from './api/auth/[...nextauth]/route';
 import { warmupNotesPool } from '@/libs/warmup';
+import type {Organisation} from '@/types/contact'
+import {getLiveOrganisations, searchLivePeople} from '@/libs/liveContactsServer'
 
 interface HomeProps {
   searchParams: Promise<{ q?: string; organisation?: string; page?: string }>;
@@ -19,20 +21,21 @@ export default async function HomePage({ searchParams }: HomeProps) {
   const session = await getServerSession(authOptions);
 
   // Load organisations for the dropdown (once, on every page render)
-  let organisations: string[] = [];
+  let organisations: Organisation[] = [];
   try {
-    organisations = await getOrganisations(session?.accessToken);
-  } catch {
+    organisations = await getLiveOrganisations();
+  } catch (err) {
     // Non-fatal — dropdown will just be empty
+    console.error('Failed to load organisations for the dropdown' ,err);
   }
 
   let results = null;
   let error = '';
-
+  
   // Search if there's a query OR an organisation filter active {session?.user.name}
   if (query || selectedOrg) {
     try {
-      results = await searchContacts(query, selectedOrg, page, 20, session?.accessToken);
+      results = await searchContacts(query, selectedOrg, page);
     } catch (err) {
       error = err instanceof Error ? err.message : 'Something went wrong';
     }

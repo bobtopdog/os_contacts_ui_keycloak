@@ -1,9 +1,6 @@
+import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server';
 import { getMeetingsByContactId } from '@/libs/meetingsRepository';
-
-function isValidUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
 
 /**
  * GET /api/meetings/:contactId
@@ -15,7 +12,7 @@ export async function GET(
 ) {
   const { contactId } = await params;
 
-  if (!isValidUuid(contactId)) {
+  if (!isValidContactId(contactId)) {
     return NextResponse.json(
       { error: 'Bad Request', message: `"${contactId}" is not a valid contact ID.` },
       { status: 400 }

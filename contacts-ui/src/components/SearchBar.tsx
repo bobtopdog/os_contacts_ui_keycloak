@@ -2,9 +2,10 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
+import type { Organisation } from '@/types/contact';
 
 interface Props {
-  organisations: string[];
+  organisations: Organisation[];
 }
 
 export default function SearchBar({ organisations }: Props) {
@@ -73,8 +74,8 @@ export default function SearchBar({ organisations }: Props) {
           >
             <option value="">All organisations</option>
             {organisations.map((org) => (
-              <option key={org} value={org}>
-                {org}
+              <option key={org.id} value={org.id}>
+                {org.name}
               </option>
             ))}
           </select>

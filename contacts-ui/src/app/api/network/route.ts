@@ -14,16 +14,6 @@ import type { NetworkData, NetworkNode, NetworkLink } from '@/types/network';
  */
 export async function GET(request: NextRequest) {
   const username = request.nextUrl.searchParams.get('username')?.trim() ?? '';
-  const authHeader = request.headers.get('Authorization') ?? '';
-  const accessToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
-
-  if (!accessToken) {
-    return NextResponse.json(
-      { error: 'Unauthorized', message: 'Missing or invalid authorization header' },
-      { status: 401 }
-    );
-  }
-  
 
   try {
     const [edges, memberCounts, userTeamIds, userPocIds] = await Promise.all([

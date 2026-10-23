@@ -1,11 +1,8 @@
+import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server'; 
 import { createMeeting } from '@/libs/meetingsRepository';
 import { parseOutcome, isOutcomeFkError } from '@/libs/outcomeValidation';
 import { parseAssessment } from '@/libs/meetingAssessmentConfig';
-
-function isValidUuid(value: string): boolean { 
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value); 
-} 
 
 function clampScore(value: unknown): number { 
   const n = parseInt(String(value), 10); 
@@ -30,7 +27,7 @@ export async function POST(request: NextRequest) {
   } 
   const { contactId, username, meetingDate, title, notes, score1, score2, score3, score4, outcomeId, subOutcomeId } = body;
 
-  if (!contactId || !isValidUuid(String(contactId))) { 
+  if (!contactId || !isValidContactId(String(contactId))) { 
 
     return NextResponse.json( 
       { error: 'Bad Request', message: 'A valid contactId is required.' }, 
