@@ -1,9 +1,6 @@
+import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server';
 import { getContactTags, addContactTag } from '@/libs/communitiesRepository';
-
-function isValidUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
 
 /**
  * GET /api/communities/contacts/:contactId
@@ -15,7 +12,7 @@ export async function GET(
 ) {
   const { contactId } = await params;
 
-  if (!isValidUuid(contactId)) {
+  if (!isValidContactId(contactId)) {
     return NextResponse.json(
       { error: 'Bad Request', message: 'Invalid contact ID.' },
       { status: 400 }

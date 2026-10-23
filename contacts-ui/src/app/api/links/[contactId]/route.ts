@@ -2,8 +2,6 @@ import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server';
 import { getLinksByContactId } from '@/libs/linksRepository';
 
-
-
 /** GET /api/links/:contactId — all links for a contact, with outcome ids */
 export async function GET(
   _request: NextRequest,

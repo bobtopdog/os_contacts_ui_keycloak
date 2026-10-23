@@ -1,9 +1,7 @@
+import { isValidContactId } from '@/libs/contactId';
 import { NextRequest, NextResponse } from 'next/server';
 import { getNotesByContactId } from '@/libs/highlightNotesRepository';
 
-function isValidUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-}
 
 /**
  * GET /api/anexnotes/:contactId
@@ -14,12 +12,9 @@ export async function GET(
   { params }: { params: Promise<{ contactId: string }> }
 ) {
   const { contactId } = await params;
-
-  if (!isValidUuid(contactId)) {
+  if (!isValidContactId(contactId)) {
     return NextResponse.json(
-      { error: 'Bad Request', message: `"${contactId}" is not a valid contact ID.` },
-      { status: 400 }
-    );
+      { error: 'Bad Request', message: 'Invalid contact ID.' }, { status: 400 });
   }
 
   try {
