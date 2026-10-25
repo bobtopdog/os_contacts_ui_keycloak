@@ -11,6 +11,7 @@ import CommunitiesPanel from '@/components/CommunitiesPanel';
 import MeetingGroupsPanel from '@/components/MeetingGroupsPanel';
 import Link from 'next/link';
 import AboutMeCard from '@/components/AboutMeCard';
+import { isAdminUser } from '@/libs/adminCheck';
 
 
 
@@ -25,7 +26,10 @@ function ProfileCard({ name, username, email, image }: {
   image?: string | null;
 }) {
   const { data: session, status } = useSession();
-const roles = session?.user?.roles ?? [];
+//const roles = session?.user?.roles ?? [];
+  const isAdmin = isAdminUser(session?.user);
+
+
   return (
     <div className="card border-0 shadow-sm mb-4">
       <div className="card-header bg-primary text-white py-4">
@@ -82,16 +86,15 @@ const roles = session?.user?.roles ?? [];
             </div>
           </div>
         )}
-        {
-      roles.includes('admin') && (
-        <div className="d-flex align-items-start gap-3 py-2 border-bottom">
+        if (isAdmin) {
+            <div className="d-flex align-items-start gap-3 py-2 border-bottom">
             <span style={{ width: '1.5rem', textAlign: 'center' }}>⚙️</span>
             <div>
               <div className="small"> <Link href="/admin" className="nav-link">Admin</Link></div>
-              <div className="fw-medium">Dropdown admin</div>
+              <div className="fw-medium">Administration page</div>
             </div>
           </div>
-       )}
+       }
        <AboutMeCard username={username} />
       </div>
     </div>

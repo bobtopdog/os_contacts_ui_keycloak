@@ -1,5 +1,7 @@
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { isAdminUser } from './adminCheck';
+
 
 /**
  * Server-side admin gate for API routes.
@@ -12,7 +14,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
  */
 const ADMIN_ROLE = 'admin';
 
-export async function requireAdmin(): Promise<string | null> {
+/* export async function requireAdmin(): Promise<string | null> {
   const session = await getServerSession(authOptions);
   if (!session?.user) return null;
 
@@ -20,4 +22,10 @@ export async function requireAdmin(): Promise<string | null> {
   if (!roles.includes(ADMIN_ROLE)) return null;
 
   return (session.user as { username?: string }).username ?? null;
+} */
+
+export async function requireAdmin(): Promise<string | null> { 
+  const session = await getServerSession(authOptions); 
+  const u = session?.user as { username?: string; roles?: string[]; groups?: string[] } | undefined; 
+  return isAdminUser(u) ? (u?.username ?? null) : null; 
 }

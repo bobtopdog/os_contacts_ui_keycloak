@@ -7,10 +7,11 @@ import Link from 'next/link';
 import AdminLookupSection from '@/components/admin/AdminLookupSection';
 import type { LookupKind } from '@/types/adminLookup';
 import OutcomesAdminSection from '@/components/admin/OutcomesAdminSection';
+import { isAdminUser } from '@/libs/adminCheck';
 
 type AdminTab = LookupKind | 'outcomes';
 
-const ADMIN_ROLE = 'admin';   // keep in sync with src/libs/adminAuth.ts
+//const ADMIN_ROLE = 'admin';   // keep in sync with src/libs/adminAuth.ts
 
 const TABS: { kind: AdminTab; label: string; nameLabel: string; showUrl?: boolean }[] = [
   { kind: 'tags',  label: '🏷️ Tags',  nameLabel: 'Tag' },
@@ -31,7 +32,7 @@ export default function AdminPage() {
   }
 
   const roles: string[] = (session?.user as { roles?: string[] } | undefined)?.roles ?? [];
-  const isAdmin = roles.includes(ADMIN_ROLE);
+  const isAdmin = isAdminUser(session?.user);
 
   if (!isAdmin) {
     return (
